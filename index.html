@@ -3063,6 +3063,9 @@ function formCausa(){const of=grupoOficiales();modal('<h2>Nueva causa solidaria<
 function crearCausa(){const eid=$('#ca1').value,e=eid?U(eid):null,nombre=e?e.nombre:$('#ca1b').value.trim(),tit=$('#ca2').value.trim(),desc=$('#ca3').value.trim(),meta=Math.round(+$('#ca4').value||0);
  if(nombre.length<3||tit.length<6||desc.length<20||meta<100000)return toast('Completa entidad, título, descripción (20 letras) y una meta desde $100.000.');
  S.CAU=S.CAU||[];S.CAU.unshift({id:uid(),cuenta:eid||null,nombre,tit,desc,meta,rec:0,don:[],verif:'Entidad sin ánimo de lucro verificada por SkyNet Genesis',f:ahora()});guardarS();cerrarModal();render();toast('Causa publicada.')}
+// Las cuentas oficiales del grupo publican sus datos de contacto (teléfono, WhatsApp, correo y su página web)
+const _revisarH=revisar;
+revisar=function(txt,autor){let m=_revisarH.apply(this,arguments);const u=U(autor);if(u&&u.oficial)m=m.filter(x=>!/dato personal|sitio no reconocido|uenta nueva|fuera de la red/.test(x));return m};
 
 migrar25();migrar27();migrar28();migrar29();migrar32();if(PROD)prodIniciar();
 render();
