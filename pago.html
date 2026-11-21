@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SKYNET · Pago seguro con Bold</title>
+<meta name="robots" content="noindex">
+<style>
+ body{margin:0;font-family:'Public Sans',system-ui,sans-serif;background:linear-gradient(160deg,#0B4F8A,#1867B0);color:#fff;min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;box-sizing:border-box}
+ .c{max-width:420px}h1{font:700 34px 'Barlow Condensed',system-ui,sans-serif;margin:0 0 6px}p{opacity:.92;line-height:1.45}
+ .g{width:42px;height:42px;border:4px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;margin:18px auto;animation:r 1s linear infinite}@keyframes r{to{transform:rotate(360deg)}}
+ button{background:#14A38B;color:#fff;border:0;border-radius:12px;padding:13px 20px;font-size:16px;font-weight:700;cursor:pointer;margin-top:10px}
+</style>
+</head>
+<body>
+<div class="c">
+ <h1>SKYNET</h1>
+ <div id="m"><p>Abriendo el pago seguro de Bold…</p><div class="g"></div></div>
+ <p style="font-size:13px;opacity:.75">Pago protegido por Bold. SKYNET nunca ve los datos de tu tarjeta.<br>SkyNet Genesis · contacto@skynetgenesis.com</p>
+</div>
+<script>
+(function(){
+ var API=/onrender\.com$|localhost|127\.0\.0\.1/.test(location.hostname)?'':'https://skynet-red.onrender.com';
+ var m=document.getElementById('m'),q=new URLSearchParams(location.search),ref=q.get('bold-order-id');
+ function poner(h){m.innerHTML=h}
+ if(ref){
+  var st=q.get('bold-tx-status');
+  poner('<p>'+(st==='rejected'?'Bold no aprobó el pago. Puedes intentarlo otra vez desde SKYNET.':'Estamos confirmando tu pago con Bold…')+'</p><div class="g"></div>');
+  var n=0;(function rev(){fetch(API+'/api/bold/volver?ref='+encodeURIComponent(ref)).then(function(r){return r.json()}).then(function(j){
+   if(j.estado==='aplicado')return poner('<p><b>¡Pago aprobado!</b></p><p>Ya puedes cerrar esta pestaña y volver a SKYNET: lo que compraste se activa solo.</p><button onclick="window.close();location.href=\'/\'">Volver a SKYNET</button>');
+   if(j.estado==='revisar')return poner('<p>Recibimos tu pago y el equipo de SKYNET lo está revisando. Te escribimos pronto.</p><button onclick="location.href=\'/\'">Volver a SKYNET</button>');
+   if(++n<40)return setTimeout(rev,4000);
+   poner('<p>Bold todavía no confirma el pago. Si ya pagaste, vuelve a SKYNET: se activa solo apenas llegue la confirmación.</p><button onclick="location.href=\'/\'">Volver a SKYNET</button>')}).catch(function(){if(++n<40)setTimeout(rev,4000)})})();
+  return}
+ var f;try{f=JSON.parse(decodeURIComponent(location.hash.slice(1)))}catch(e){}
+ if(!f||!f.orderId)return poner('<p>No encontramos el pedido. Vuelve a SKYNET e inténtalo otra vez.</p><button onclick="location.href=\'/\'">Volver a SKYNET</button>');
+ var s=document.createElement('script');s.src='https://checkout.bold.co/library/boldPaymentButton.js';
+ s.onload=function(){try{
+  var b=new BoldCheckout({orderId:f.orderId,currency:f.currency||'COP',amount:String(f.amount),apiKey:f.apiKey,integritySignature:f.signature,description:f.description,redirectionUrl:f.redirectionUrl});
+  poner('<p>Pago de <b>$'+Number(f.amount).toLocaleString('es-CO')+'</b></p><p style="font-size:14px">'+String(f.description||'').replace(/</g,'&lt;')+'</p><button id="pb">Pagar con Bold</button>');
+  document.getElementById('pb').onclick=function(){b.open()};b.open()}catch(e){poner('<p>No se pudo abrir Bold. Recarga esta página.</p>')}};
+ s.onerror=function(){poner('<p>No se pudo cargar Bold. Revisa tu internet y recarga esta página.</p>')};
+ document.head.appendChild(s);
+})();
+</script>
+</body>
+</html>

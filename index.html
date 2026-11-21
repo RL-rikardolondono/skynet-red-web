@@ -1615,7 +1615,7 @@ function repT(id){const v=repV(id),c=document.querySelector('#'+id+' .ctrl');if(
 function repSeek(id,x){const v=repV(id);if(!v)return;const a=+v.dataset.ini||0,f=+v.dataset.fin||0,d=f?f-a:v.duration;if(d&&isFinite(d))v.currentTime=a+d*x/1000}
 
 /* ---- Editor de la publicación: filtros, texto sobre el video y subtítulos ---- */
-function editorMedia(vid){return '<div class="edm"><div class="fila" style="gap:6px;flex-wrap:wrap"><span class="peq"><b>Filtro:</b></span>'+Object.entries(FILTROS).map(([k,v])=>'<button type="button" class="chipb'+(filtroN===k?' on':'')+'" onclick="filtroN=\''+k+'\';pintarPrev()">'+v[0]+'</button>').join('')+'</div>'+
+function editorMedia(vid){return '<div class="edm"><div class="fila" style="gap:6px;flex-wrap:wrap"><span class="peq"><b>Filtro:</b></span>'+filtrosUI()+'</div>'+
  (vid?'<div class="fila" style="gap:6px;margin-top:8px;flex-wrap:nowrap"><input id="nvt" maxlength="60" placeholder="Texto sobre el video (opcional)" value="'+esc(vtxtN?vtxtN.t:'')+'" oninput="vtxtVivo()"><select id="nvp" aria-label="Dónde va el texto" style="width:auto" onchange="vtxtVivo()">'+[['arriba','Arriba'],['centro','Centro'],['abajo','Abajo']].map(([k,t])=>'<option value="'+k+'"'+((vtxtN?vtxtN.pos:'abajo')===k?' selected':'')+'>'+t+'</option>').join('')+'</select></div><details class="subsEd"'+((subsN&&subsN.length)||subsTxt?' open':'')+'><summary class="peq"><b>Subtítulos</b> · para que se entienda sin sonido</summary><textarea id="nsub" rows="3" maxlength="1500" placeholder="Escribe lo que se dice, una frase por línea. Se reparten a lo largo del video." oninput="subsTxt=this.value">'+esc(subsTxt!==null?subsTxt:(subsN||[]).map(x=>x.t).join('\n'))+'</textarea>'+(subsN&&subsN.length?'<p class="suave peq" style="margin:4px 0 0">Se escribieron solos mientras grababas. Revísalos y corrige lo que haga falta.</p>':'')+'</details>':'')+'</div>'}
 function vtxtVivo(){const t=$('#nvt').value,pos=$('#nvp').value;vtxtN={t,pos};const r=document.querySelector('#prev .rep');if(!r)return;let o=r.querySelector('.vtxt');if(!t){if(o)o.remove();return}if(!o){o=document.createElement('div');r.appendChild(o)}o.className='vtxt '+pos;o.textContent=t}
 function pintarPrev(){
@@ -2812,10 +2812,10 @@ function publicar1(cid){
  return publicar10(cid)}
 // 2) Alcance orgánico: cada publicación llega gratis a sus seguidores y a un número limitado de personas más.
 //    Para llegar a más personas del público escogido, se promociona (así la publicidad pagada sí se ve).
-const alcanceMax=()=>S.cfg.alcanceOrg==null?300:+S.cfg.alcanceOrg;
+const alcanceMax=()=>S.cfg.alcanceOrg==null?5:+S.cfg.alcanceOrg;
 function alcanceOk(p){const m=alcanceMax();if(!m)return true;const vv=p.vv||[];if(vv.includes(S.me))return true;const sg=(U(p.autor)||{}).segs||[];if(sg.includes(S.me))return true;return vv.filter(x=>!sg.includes(x)).length<m}
 function alcanceDe(p){const sg=(U(p.autor)||{}).segs||[];return (p.vv||[]).filter(x=>!sg.includes(x)).length}
-function panelFondo(){return panelFondo0()+'<div class="seccion"><h3 style="font-size:22px">Alcance gratis de cada publicación</h3><p class="suave peq">Cada publicación llega a todos los seguidores de quien publica y, además, a este número de personas que no lo siguen. Para llegar a más hay que promocionarla. Escribe 0 para no limitar.</p><div class="fila" style="align-items:end"><div><label class="l" for="falc">Personas que no lo siguen</label><input id="falc" type="number" min="0" step="50" value="'+alcanceMax()+'" style="width:140px"></div><button class="btn" onclick="const v=+$(\'#falc\').value;if(!(v>=0))return toast(\'Escribe un número.\');S.cfg.alcanceOrg=v;bit(\'Cambió el alcance gratis a \'+v+\' personas\');guardarS();render();toast(\'Guardado.\')">Guardar</button></div><h3 style="font-size:22px;margin-top:16px">Ciudad SkyNet: duración de las obras</h3><p class="suave peq">Minutos reales que dura un día de obra (una casa tarda 1 día, un rascacielos 10).</p><div class="fila" style="align-items:end"><div><label class="l" for="fmd">Minutos por día de obra</label><input id="fmd" type="number" min="0" step="5" value="'+minDia()+'" style="width:140px"></div><button class="btn" onclick="const v=+$(\'#fmd\').value;if(!(v>=0))return toast(\'Escribe un número.\');S.cfg.minDia=v;bit(\'Cambió el día de obra a \'+v+\' minutos\');guardarS();render();toast(\'Guardado.\')">Guardar</button></div></div>'}
+function panelFondo(){return panelFondo0()+(typeof panelBold==='function'?panelBold():'')+'<div class="seccion"><h3 style="font-size:22px">Alcance gratis de cada publicación</h3><p class="suave peq">Cada publicación llega a todos los seguidores de quien publica y, además, a este número de personas que no lo siguen. Para llegar a más hay que promocionarla. Escribe 0 para no limitar.</p><div class="fila" style="align-items:end"><div><label class="l" for="falc">Personas que no lo siguen</label><input id="falc" type="number" min="0" step="50" value="'+alcanceMax()+'" style="width:140px"></div><button class="btn" onclick="const v=+$(\'#falc\').value;if(!(v>=0))return toast(\'Escribe un número.\');S.cfg.alcanceOrg=v;bit(\'Cambió el alcance gratis a \'+v+\' personas\');guardarS();render();toast(\'Guardado.\')">Guardar</button></div><h3 style="font-size:22px;margin-top:16px">Ciudad SkyNet: duración de las obras</h3><p class="suave peq">Minutos reales que dura un día de obra (una casa tarda 1 día, un rascacielos 10).</p><div class="fila" style="align-items:end"><div><label class="l" for="fmd">Minutos por día de obra</label><input id="fmd" type="number" min="0" step="5" value="'+minDia()+'" style="width:140px"></div><button class="btn" onclick="const v=+$(\'#fmd\').value;if(!(v>=0))return toast(\'Escribe un número.\');S.cfg.minDia=v;bit(\'Cambió el día de obra a \'+v+\' minutos\');guardarS();render();toast(\'Guardado.\')">Guardar</button></div></div>'}
 // 3) Panel profesional con requisitos y compromisos
 function reqPanel(u){const neg=esNeg(u);let r;
  if(neg)r=[['Cuenta de '+(u.tipo==='institucion'?'institución':'empresa')+' verificada (NIT, Cámara de Comercio y representante legal)',!!u.verif],['Sin sanciones vigentes',!sancion(u.id)]];
@@ -2851,6 +2851,72 @@ function restante(b){const ms=Date.parse(b.obra)-Date.now(),dias=ms/(minDia()*6e
  return sim+' de obra (≈ '+(min>=60?Math.floor(min/60)+' h '+(min%60?min%60+' min':''):min+' min')+' reales)'}
 function verEdificio(x,y){const j=jg(yo()),b=j.ed.find(e=>e.x===x&&e.y===y);if(!enObra(b))return verEdificio0(x,y);const e=EDI[b.k],pct=Math.min(100,Math.round(100*(1-(Date.parse(b.obra)-Date.now())/(b.diasObra*minDia()*6e4))));
  modal('<div style="text-align:center;font-size:72px">🚧</div><h2 style="text-align:center">'+e.e+' '+e.n+(b.nPrev?' · subiendo a nivel '+b.n:' en construcción')+'</h2><div style="background:var(--fa);border-radius:99px;height:12px;margin:14px 0"><div style="width:'+pct+'%;height:100%;background:var(--verde);border-radius:99px"></div></div><p style="text-align:center">Faltan <b>'+restante(b)+'</b>.</p><p class="suave peq" style="text-align:center">En Ciudad SkyNet un día de obra son '+minDia()+' minutos reales. Mientras tanto '+(b.nPrev?'sigue produciendo como nivel '+b.nPrev:'todavía no produce ni da casa')+'. Mientras tanto puedes construir en otros lotes.</p><div class="fila" style="justify-content:center"><button class="btn sec" onclick="cerrarModal()">Cerrar</button></div>')}
+
+/* v32e · Pagos reales con Bold (en producción) y filtros de fotos por categoría */
+// En producción, toda ventana de pago («Simular pago aprobado») se convierte en un pago real con Bold.
+// El pago se abre en otra pestaña; esta pantalla espera la confirmación del servidor y entrega lo comprado.
+function prodPagoHtml(h){
+ const m=h.match(/onclick="([^"]*)">Simular pago aprobado/),acc=m?m[1].replace(/&quot;/g,'"').replace(/&#39;/g,"'"):'';
+ const v=(h.replace(/<[^>]+>/g,' ').match(/\$\s?(\d{1,3}(?:\.\d{3})+|\d+)/)||[])[1];const valor=v?+v.replace(/\./g,''):0;
+ const pl=acc.match(/^activarPlan\('([a-z0-9]+)'\)/),prem=/^activarPremium\(/.test(acc);
+ const d=document.createElement('div');d.innerHTML=h;const ps=[...d.querySelectorAll('p')].map(x=>x.textContent.trim()).filter(Boolean);
+ const desc=(pl?'Plan '+(PLANES[pl[1]]?PLANES[pl[1]].n:pl[1]):prem?'Plan Premium':(ps[0]||'Compra en SKYNET')).slice(0,110);
+ window._pagoPend={acc,valor,desc,tipo:pl||prem?'plan':'compra',k:pl?pl[1]:prem?'premium':null,est:{_pp:window._pp,_reg:window._reg,_comp:window._comp}};
+ h=h.replace(/<div class="aviso am[^"]*">[^<]*Demostración:[\s\S]*?<\/div>/,'<p style="font-size:20px;margin:6px 0"><b>Total: '+pesos(valor)+'</b></p><div class="aviso az peq">🛡 Pagas en la página segura de Bold (tarjeta, PSE, Nequi, Daviplata). SKYNET nunca ve los datos de tu tarjeta.</div>');
+ return h.replace(/<button class="btn" onclick="[^"]*">Simular pago aprobado<\/button>/,'<button class="btn" onclick="prodPagar()">Pagar con Bold</button>')}
+function modal(h){if(PROD&&typeof h==='string'&&h.includes('Simular pago aprobado'))h=prodPagoHtml(h);return modal0(h)}
+function prodGuardarPend(p){try{const l=JSON.parse(localStorage.getItem('sk_pagos')||'{}');l[p.id]={acc:p.acc,tipo:p.tipo,est:p.est,desc:p.desc,valor:p.valor};localStorage.setItem('sk_pagos',JSON.stringify(l))}catch(e){}}
+function prodLeerPend(id){try{return (JSON.parse(localStorage.getItem('sk_pagos')||'{}'))[id]||null}catch(e){return null}}
+function prodBorrarPend(id){try{const l=JSON.parse(localStorage.getItem('sk_pagos')||'{}');delete l[id];localStorage.setItem('sk_pagos',JSON.stringify(l))}catch(e){}}
+async function prodPagar(prueba){const p=prueba?{tipo:'prueba',valor:1000,desc:'Pago de prueba de SKYNET',acc:''}:window._pagoPend;if(!p)return;
+ const w=window.open('','skpago');if(w)try{w.document.write('<p style="font-family:sans-serif;padding:30px">Abriendo el pago seguro de Bold…</p>')}catch(e){}
+ try{const r=await prodApi('/api/bold/pedido',{tipo:p.tipo,k:p.k,valor:p.valor,desc:p.desc});p.id=r.id;prodGuardarPend(p);
+  const url=location.origin+'/pago.html#'+encodeURIComponent(JSON.stringify(r.firma));
+  if(w)w.location.href=url;else{location.href=url;return}
+  modal0('<h2>Completa el pago en Bold</h2><p>Se abrió una pestaña nueva con el pago seguro de Bold por <b>'+pesos(+r.firma.amount)+'</b>.</p><p class="suave">Cuando Bold lo apruebe, aquí se activa solo. Puedes volver a esta pestaña.</p><div class="fila" style="flex-wrap:wrap"><button class="btn" onclick="prodRevisarPago(\''+r.id+'\',true)">Ya pagué: revisar</button><button class="btn sec" onclick="window.open(\''+url+'\',\'skpago\')">Abrir otra vez el pago</button><button class="btn sec" onclick="cerrarModal()">Cerrar</button></div>');
+  prodVigilar(r.id)}catch(e){if(w)try{w.close()}catch(x){}toast(e.message)}}
+let _vig={};
+function prodVigilar(id){if(_vig[id])return;let n=0;_vig[id]=setInterval(async()=>{n++;if(n>450){clearInterval(_vig[id]);delete _vig[id];return}if(document.hidden&&n%3)return;await prodRevisarPago(id,false)},4000)}
+async function prodRevisarPago(id,aviso){try{const r=await prodApi('/api/bold/pedido?id='+encodeURIComponent(id));
+ if(r.estado==='aplicado'){if(_vig[id]){clearInterval(_vig[id]);delete _vig[id]}if(!r.entregado)await prodEntregar(r);return true}
+ if(r.estado==='revisar'){if(_vig[id]){clearInterval(_vig[id]);delete _vig[id]}modal0('<h2>Revisamos tu pago</h2><p>Bold recibió un valor distinto al del pedido. El equipo de SKYNET lo revisa y te escribe. Pedido '+esc(r.orden||id)+'.</p><button class="btn" onclick="cerrarModal()">Entendido</button>');return}
+ if(aviso)toast('Bold todavía no confirma el pago. Si ya pagaste, espera un momento.')}catch(e){if(aviso)toast(e.message)}}
+async function prodEntregar(r){const p=prodLeerPend(r.id);
+ if(r.tipo==='plan'){await prodSync();cerrarModal();render();toast('¡Pago aprobado! Tu plan ya está activo.')}
+ else if(r.tipo==='prueba'){cerrarModal();toast('Pago de prueba de $1.000 aprobado y registrado.')}
+ else if(p&&p.acc){const est=p.est||{};Object.keys(est).forEach(k=>{if(est[k]!==undefined&&window[k]==null)window[k]=est[k]});
+  const sinFuncion=/window\._pagoAcc/.test(p.acc)&&!window._pagoAcc;
+  if(sinFuncion){cerrarModal();modal0('<h2>Pago aprobado</h2><p>Bold aprobó tu pago de <b>'+pesos(r.valor)+'</b> por «'+esc(r.desc)+'». Si no ves lo comprado, escríbenos a contacto@skynetgenesis.com con el pedido '+esc(r.orden||r.id)+'.</p><button class="btn" onclick="cerrarModal()">Entendido</button>')}
+  else{try{new Function(p.acc)()}catch(e){console.error(e)}toast('¡Pago aprobado!')}}
+ else{cerrarModal();toast('Pago aprobado: '+r.desc)}
+ prodBorrarPend(r.id);await prodApi('/api/bold/entregado',{id:r.id}).catch(()=>{})}
+// Al entrar: entregar lo pagado que quedó pendiente (por ejemplo, si se cerró la pestaña)
+async function prodPagosPendientes(){if(!PROD||!_tok)return;try{const r=await prodApi('/api/bold/mios');for(const p of r.pedidos){if(p.estado==='aplicado'&&!p.entregado)await prodEntregar(p);else if(p.estado==='pendiente'&&prodLeerPend(p.id))prodVigilar(p.id)}}catch(e){}}
+setTimeout(()=>{if(PROD)setInterval(()=>{if(_tok&&S.me&&!window._pagRev){window._pagRev=1;prodPagosPendientes()}},5000)},3000);
+// Panel del superadministrador: pago de prueba y lista de pagos
+function panelBold(){if(!PROD)return '';
+ return '<div class="seccion"><h3 style="font-size:22px">Pagos con Bold</h3><p class="suave peq">Cada compra en SKYNET se paga con el Bold de SkyNet Genesis (comisión de Bold por venta, sin mensualidad).</p><div class="fila" style="flex-wrap:wrap"><button class="btn" onclick="prodPagar(true)">Pago de prueba de $1.000</button><button class="btn sec" onclick="verPagosBold()">Ver pagos</button></div></div>'}
+async function verPagosBold(){try{const r=await prodApi('/api/bold/todos');modal0('<h2>Pagos con Bold</h2>'+(r.pedidos.length?r.pedidos.map(p=>'<div class="fila" style="justify-content:space-between;border-bottom:1px solid var(--borde);padding:8px 0;gap:8px"><span class="peq"><b>'+esc(p.desc)+'</b><br><span class="suave">'+fecha(p.f)+' · '+esc(p.tipo)+'</span></span><span style="text-align:right"><b>'+pesos(p.valor)+'</b><br><span class="chip '+(p.estado==='aplicado'?'ve':p.estado==='revisar'?'am':'gr')+'">'+p.estado+'</span></span></div>').join(''):'<p class="suave">Todavía no hay pagos.</p>')+'<button class="btn sec" style="margin-top:10px" onclick="cerrarModal()">Cerrar</button>')}catch(e){toast(e.message)}}
+
+/* ---- Filtros de fotos y videos por categoría ---- */
+Object.assign(FILTROS,{
+ natural:['Natural nítido','contrast(1.08) saturate(1.05)'],pro:['Profesional','contrast(1.12) saturate(.9) brightness(1.02)'],docu:['Documental','grayscale(.35) contrast(1.15)'],mate:['Mate','contrast(.9) brightness(1.08) saturate(.85)'],
+ suave:['Piel suave','brightness(1.06) contrast(.92) saturate(1.05)'],dorada:['Luz dorada','sepia(.2) saturate(1.2) brightness(1.05)'],rubor:['Rubor','hue-rotate(-6deg) saturate(1.25) brightness(1.04)'],brillo:['Brillo','brightness(1.13) contrast(.95)'],porcelana:['Porcelana','brightness(1.1) saturate(.8) contrast(.95)'],
+ pop:['Pop','saturate(2) contrast(1.2)'],neon:['Neón','hue-rotate(90deg) saturate(2)'],arcoiris:['Arcoíris','hue-rotate(180deg) saturate(1.6)'],negativo:['Negativo','invert(1)'],comic:['Cómic','contrast(1.6) saturate(1.6)'],
+ atardecer:['Atardecer','sepia(.35) saturate(1.5) hue-rotate(-15deg)'],playa:['Playa','saturate(1.4) brightness(1.08) hue-rotate(-5deg)'],noche:['Noche','brightness(.85) contrast(1.2) hue-rotate(200deg) saturate(.7)'],
+ pelicula:['Película 80','sepia(.4) contrast(1.1) saturate(1.3)'],polaroid:['Polaroid','sepia(.25) contrast(.9) brightness(1.1)'],viejo:['Foto antigua','sepia(.9) contrast(.9)'],
+ cine:['Cine','contrast(1.25) saturate(.85) sepia(.15)'],noir:['Cine negro','grayscale(1) contrast(1.5) brightness(.9)'],teal:['Hollywood','hue-rotate(-12deg) saturate(1.3) contrast(1.15)'],
+ glam:['Glamour','brightness(1.08) contrast(1.05) saturate(1.3) sepia(.1)'],nacar:['Nácar','brightness(1.15) saturate(.9) hue-rotate(-4deg)'],bronce:['Bronceado','sepia(.3) saturate(1.4) brightness(1.02)'],
+ fiesta:['Fiesta','saturate(1.8) hue-rotate(25deg) contrast(1.1)'],disco:['Disco','hue-rotate(260deg) saturate(1.9) contrast(1.2)'],dulce:['Dulce','saturate(1.2) brightness(1.1) hue-rotate(-20deg)']});
+const FCATS=[{id:'nat',n:'Naturales y serios',l:['','natural','pro','bn','docu','mate']},{id:'bel',n:'Belleza',l:['suave','dorada','rubor','brillo','porcelana']},{id:'div',n:'Divertidos',l:['vivo','pop','neon','arcoiris','negativo','comic']},{id:'amb',n:'Ambiente',l:['calido','frio','atardecer','playa','noche']},{id:'ret',n:'Retro',l:['retro','pelicula','polaroid','viejo']}];
+const FPACKS={cine:{n:'Paquete Cine',e:'🎬',v:2900,l:['cine','noir','teal']},glam:{n:'Belleza Pro',e:'💄',v:2900,l:['glam','nacar','bronce']},fiesta:{n:'Paquete Fiesta',e:'🎉',v:2900,l:['fiesta','disco','dulce']}};
+const packDe=k=>Object.keys(FPACKS).find(p=>FPACKS[p].l.includes(k));
+const tienePack=p=>(yo()&&(yo().fpacks||[]).includes(p))||(yo()&&yo().premium);
+function filtrosUI(){const cat=window._fcat||'nat',lista=cat.startsWith('pk-')?FPACKS[cat.slice(3)].l:(FCATS.find(c=>c.id===cat)||FCATS[0]).l;
+ return '<div class="fila" style="gap:6px;flex-wrap:wrap;margin-bottom:6px">'+FCATS.map(c=>'<button type="button" class="chipb'+(cat===c.id?' on':'')+'" onclick="window._fcat=\''+c.id+'\';pintarPrev()">'+c.n+'</button>').join('')+Object.entries(FPACKS).map(([k,p])=>'<button type="button" class="chipb'+(cat==='pk-'+k?' on':'')+'" onclick="window._fcat=\'pk-'+k+'\';pintarPrev()">'+p.e+' '+p.n+(tienePack(k)?'':' 🔒')+'</button>').join('')+'</div>'+
+ '<div class="fila" style="gap:6px;flex-wrap:wrap">'+lista.map(k=>{const pk=packDe(k),bloq=pk&&!tienePack(pk);return '<button type="button" class="chipb'+(filtroN===k?' on':'')+'" onclick="'+(bloq?'comprarPack(\''+pk+'\')':'filtroN=\''+k+'\';pintarPrev()')+'">'+FILTROS[k][0]+(bloq?' 🔒':'')+'</button>'}).join('')+'</div>'+
+ (cat.startsWith('pk-')&&!tienePack(cat.slice(3))?'<p class="suave peq" style="margin:6px 0 0">'+FPACKS[cat.slice(3)].n+': '+pesos(FPACKS[cat.slice(3)].v)+' una sola vez, para siempre. Incluido en Premium. <button type="button" class="btn chico" onclick="comprarPack(\''+cat.slice(3)+'\')">Comprar</button></p>':'')}
+function comprarPack(k){const p=FPACKS[k];if(tienePack(k))return toast('Ya tienes '+p.n+'.');pagoBold(p.n,'Filtros '+p.l.map(x=>FILTROS[x][0]).join(', ')+'. Son tuyos para siempre, en fotos y videos.',p.v,()=>{const u=yo();u.fpacks=[...new Set([...(u.fpacks||[]),k])];guardarS();render();toast(p.e+' '+p.n+' desbloqueado.')})}
 
 migrar25();migrar27();migrar28();migrar29();migrar32();if(PROD)prodIniciar();
 render();
