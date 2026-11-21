@@ -3124,6 +3124,16 @@ function rechazarFigura(id){const s=(S.SOL||[]).find(x=>x.id===id);if(!s)return;
 // Iglesias, ministerios y medios cristianos: nombres protegidos (solo su cuenta oficial)
 PROTEGIDOS.push(...[["Misión Carismática Internacional","nacional"],["MCI Iglesia","nacional"],["Iglesia Manantial de Vida Eterna","nacional"],["Manantial de Vida Eterna","nacional"],["El Lugar de Su Presencia","nacional"],["Iglesia de Dios Ministerial de Jesucristo Internacional","nacional"],["Iglesia de Dios Ministerial","nacional"],["Misión Paz a las Naciones","nacional"],["Centro Mundial de Avivamiento","nacional"],["Iglesia Pentecostal Unida de Colombia","nacional"],["Casa Sobre la Roca","nacional"],["Iglesia Universal del Reino de Dios","nacional"],["Asambleas de Dios","nacional"],["Conferencia Episcopal de Colombia","nacional"],["Arquidiócesis de Bogotá","nacional"],["Diócesis de Santa Marta","nacional"],["Minuto de Dios","nacional"],["El Minuto de Dios","nacional"],["Hillsong Church","nacional"],["Lakewood Church","nacional"],["Elevation Church","nacional"],["Bethel Church","nacional"],["Testigos de Jehová","nacional"],["Iglesia de Jesucristo de los Santos de los Últimos Días","nacional"],["Iglesia Adventista del Séptimo Día","nacional"],["Iglesia Cuadrangular","nacional"],["Iglesia Bautista","nacional"],["Convención Bautista","nacional"],["Vaticano News","nacional"],["Radio María","nacional"],["EWTN","nacional"],["Enlace TV","nacional"],["CVC La Voz","nacional"],["Radio Minuto de Dios","nacional"],["Teleamiga","nacional"],["Cristovisión","nacional"],["Jesus Film","nacional"],["Biblia Reina Valera","nacional"],["Reina Valera 1960","nacional"],["Sociedad Bíblica","nacional"],["Sociedades Bíblicas Unidas","nacional"],["YouVersion","nacional"],["Gedeones","nacional"],["Juventud con una Misión","nacional"],["JUCUM","nacional"],["Campus Crusade","nacional"],["Compassion International","nacional"],["Visión Mundial Colombia","nacional"],["Samaritan's Purse","nacional"]]); /* iglesias y medios cristianos */
 
+/* v35 · Páginas públicas de privacidad, términos y borrado de cuenta (Google Play y Ley 1581) */
+const vistaPortada35=vistaPortada;
+vistaPortada=function(){let h=vistaPortada35.apply(this,arguments);
+ return h.replace('<button onclick="verReglas()">Privacidad</button>','<button onclick="location.href=\'/privacidad.html\'">Privacidad</button><button onclick="location.href=\'/terminos.html\'">Términos</button>')};
+const vConfig35=vConfig;
+vConfig=function(){let h=vConfig35.apply(this,arguments);
+ return h.replace('onclick="borrarCuenta()">Borrar mi cuenta</button>','onclick="borrarCuenta()">Borrar mi cuenta</button><p class="suave peq" style="margin:10px 0 0"><a href="/privacidad.html" target="_blank" rel="noopener">Política de privacidad</a> · <a href="/terminos.html" target="_blank" rel="noopener">Términos de uso</a></p>')};
+window.addEventListener('load',()=>setTimeout(()=>{try{const h=location.hash;if(h==='#normas'){history.replaceState(null,'',location.pathname+location.search);verReglas()}
+ else if(h==='#config'&&typeof yo==='function'&&yo()){history.replaceState(null,'',location.pathname+location.search);ir('config')}}catch(e){}},1500));
+
 migrar25();migrar27();migrar28();migrar29();migrar32();if(PROD)prodIniciar();
 render();
 iniciarTraduccion();
