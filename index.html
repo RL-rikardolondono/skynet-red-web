@@ -3024,7 +3024,7 @@ if(PLAY){let _plT=0;new MutationObserver(()=>{clearTimeout(_plT);_plT=setTimeout
    Un gestor entra a la cuenta de la empresa desde Configuración sin otra contraseña y vuelve a la suya con un toque. */
 function tieneSello(u){return !!(u&&u.verif&&(u.id==='skynet'||u.oficial||planAct(u,u.tipo==='persona'?['verificado','premium']:'empresa')))}
 const _TOK_YO='sng_red_tok_yo';
-function grupoOficiales(){return Object.values(S.U||{}).filter(u=>u&&u.oficial&&u.tipo!=='super'&&u.tipo!=='mod')}
+function grupoOficiales(){return Object.values(S.U||{}).filter(u=>u&&u.oficial&&u.tipo!=='super'&&u.tipo!=='mod'&&u.tipo!=='persona')}
 function idPropio(){try{return localStorage.getItem('sng_red_yo_id')||S.me}catch(e){return S.me}}
 function misCuentasOf(){const yoId=idPropio();return grupoOficiales().filter(u=>(u.gestores||[]).includes(yoId)&&u.id!==S.me)}
 async function usarCuenta(id){if(!PROD)return toast('Disponible en la red real.');
@@ -3042,11 +3042,13 @@ function bloqueCuentasOf(){let prev=null;try{prev=localStorage.getItem(_TOK_YO)}
   (prev?'<div class="aviso az peq" style="margin-bottom:8px">Estás usando la cuenta <b>'+esc(yo().nombre)+'</b>. Lo que publiques sale a su nombre.</div><button class="btn" onclick="volverMiCuenta()">Volver a mi cuenta personal</button>':'')+
   l.map(u=>'<div class="fila" style="justify-content:space-between;margin-top:8px"><span>'+avatar(u,34)+'</span><span style="flex:1;margin-left:8px"><b>'+esc(u.nombre)+'</b> '+(tieneSello(u)?'<span class="suave peq">✔ oficial</span>':'')+'<br><span class="suave peq">@'+esc(u.u)+'</span></span><button class="btn sec chico" onclick="usarCuenta(\''+u.id+'\')">Usar esta cuenta</button></div>').join('')+'</div>'}
 const _vConfigH=vConfig;
-vConfig=function(){const h=_vConfigH();const b=bloqueCuentasOf();if(!b)return h;const i=h.indexOf('<div class="cfgtit">');return i<0?h+b:h.slice(0,i)+b+h.slice(i)};
+vConfig=function(){const h=_vConfigH();const b=bloqueCuentasOf()+(yo().tipo!=='super'&&esDuenoCli()?'<div class="cfgtit">Empresas del grupo</div>'+panelGrupo():'');if(!b)return h;const i=h.indexOf('<div class="cfgtit">');return i<0?h+b:h.slice(0,i)+b+h.slice(i)};
 // Panel del superadministrador
 const _panelBoldH=panelBold;
 panelBold=function(){return _panelBoldH()+panelGrupo()};
-function panelGrupo(){if(!PROD||yo().tipo!=='super')return '';const of=grupoOficiales();
+// El dueño de la red (cuenta personal oficial) también administra las empresas del grupo
+function esDuenoCli(){const u=yo();return !!u&&(u.tipo==='super'||(u.oficial&&u.tipo==='persona'))}
+function panelGrupo(){if(!PROD||!esDuenoCli())return '';const of=grupoOficiales();
  return '<div class="seccion"><h3 style="font-size:22px">Cuentas oficiales del grupo</h3><p class="suave peq">Empresas de SkyNet Genesis: llevan sello oficial sin pagar plan. Sus gestores entran desde Configuración › Cuentas que administras.</p>'+
  (of.length?of.map(u=>'<div class="fila" style="justify-content:space-between;margin:6px 0;flex-wrap:wrap"><span><b>'+esc(u.nombre)+'</b> <span class="suave peq">@'+esc(u.u)+' · gestores: '+((u.gestores||[]).map(g=>'@'+esc((U(g)||{}).u||g)).join(', ')||'ninguno')+'</span></span><span><button class="btn sec chico" onclick="editarGestores(\''+u.id+'\')">Gestores</button> <button class="btn sec chico" onclick="usarCuenta(\''+u.id+'\')">Usar</button></span></div>').join(''):'<p class="suave">Aún no hay cuentas oficiales.</p>')+
  '<button class="btn" onclick="formCuentaOf()">+ Crear cuenta oficial</button></div>'+
@@ -3060,9 +3062,9 @@ async function crearCuentaOf(){const v=k=>($('#'+k)||{}).value||'';
 function editarGestores(id){const u=U(id);modal('<h2>Gestores de '+esc(u.nombre)+'</h2><p class="suave peq">Personas que pueden entrar a esta cuenta y publicar a su nombre.</p><input id="gst" value="'+esc((u.gestores||[]).map(g=>'@'+((U(g)||{}).u||'')).join(', '))+'"><div class="fila" style="margin-top:10px"><button class="btn" onclick="guardarGestores(\''+id+'\')">Guardar</button><button class="btn sec" onclick="cerrarModal()">Cancelar</button></div>')}
 async function guardarGestores(id){try{const r=await prodApi('/api/admin/gestores',{id,gestores:$('#gst').value.split(',').map(x=>x.trim()).filter(Boolean)});U(id).gestores=r.gestores;cerrarModal();await prodSync();render();toast('Gestores guardados.')}catch(e){toast(e.message)}}
 function formCausa(){const of=grupoOficiales();modal('<h2>Nueva causa solidaria</h2><label>Entidad que recibe</label><select id="ca1">'+of.map(u=>'<option value="'+u.id+'">'+esc(u.nombre)+'</option>').join('')+'<option value="">Otra entidad (escribir nombre)</option></select><input id="ca1b" placeholder="Nombre de la entidad (si es otra)" maxlength="60"><label>Título</label><input id="ca2" maxlength="80"><label>Descripción (en qué se usa el dinero)</label><textarea id="ca3" maxlength="400"></textarea><label>Meta en pesos</label><input id="ca4" type="number" min="100000" step="100000" value="5000000"><div class="fila" style="margin-top:10px"><button class="btn" onclick="crearCausa()">Publicar causa</button><button class="btn sec" onclick="cerrarModal()">Cancelar</button></div>')}
-function crearCausa(){const eid=$('#ca1').value,e=eid?U(eid):null,nombre=e?e.nombre:$('#ca1b').value.trim(),tit=$('#ca2').value.trim(),desc=$('#ca3').value.trim(),meta=Math.round(+$('#ca4').value||0);
+async function crearCausa(){const eid=$('#ca1').value,e=eid?U(eid):null,nombre=e?e.nombre:$('#ca1b').value.trim(),tit=$('#ca2').value.trim(),desc=$('#ca3').value.trim(),meta=Math.round(+$('#ca4').value||0);
  if(nombre.length<3||tit.length<6||desc.length<20||meta<100000)return toast('Completa entidad, título, descripción (20 letras) y una meta desde $100.000.');
- S.CAU=S.CAU||[];S.CAU.unshift({id:uid(),cuenta:eid||null,nombre,tit,desc,meta,rec:0,don:[],verif:'Entidad sin ánimo de lucro verificada por SkyNet Genesis',f:ahora()});guardarS();cerrarModal();render();toast('Causa publicada.')}
+ try{const r=await prodApi('/api/admin/causa',{cuenta:eid||null,nombre,tit,desc,meta});S.CAU=S.CAU||[];if(!S.CAU.some(c=>c.id===r.causa.id))S.CAU.unshift(r.causa);cerrarModal();await prodSync();render();toast('Causa publicada.')}catch(x){toast(x.message)}}
 // Las cuentas oficiales del grupo publican sus datos de contacto (teléfono, WhatsApp, correo y su página web)
 const _revisarH=revisar;
 revisar=function(txt,autor){let m=_revisarH.apply(this,arguments);const u=U(autor);if(u&&u.oficial)m=m.filter(x=>!/dato personal|sitio no reconocido|uenta nueva|fuera de la red/.test(x));return m};
