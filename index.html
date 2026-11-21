@@ -3067,7 +3067,7 @@ async function crearCausa(){const eid=$('#ca1').value,e=eid?U(eid):null,nombre=e
  try{const r=await prodApi('/api/admin/causa',{cuenta:eid||null,nombre,tit,desc,meta});S.CAU=S.CAU||[];if(!S.CAU.some(c=>c.id===r.causa.id))S.CAU.unshift(r.causa);cerrarModal();await prodSync();render();toast('Causa publicada.')}catch(x){toast(x.message)}}
 // Las cuentas oficiales del grupo publican sus datos de contacto (teléfono, WhatsApp, correo y su página web)
 const _revisarH=revisar;
-revisar=function(txt,autor){let m=_revisarH.apply(this,arguments);const u=U(autor);if(u&&u.oficial)m=m.filter(x=>!/dato personal|sitio no reconocido|uenta nueva|fuera de la red/.test(x));return m};
+revisar=function(txt,autor){let m=_revisarH.apply(this,arguments);const u=U(autor);if(u&&u.oficial)m=m.filter(x=>!/dato personal|sitio no reconocido|uenta nueva|fuera de la red|Posible estafa/.test(x));return m};
 
 migrar25();migrar27();migrar28();migrar29();migrar32();if(PROD)prodIniciar();
 render();
