@@ -2993,6 +2993,32 @@ vPromos=function(){const l=S.PROMO.filter(x=>x.autor===S.me);if(!l.length)return
 const _panelBold32=panelBold;
 panelBold=function(){return _panelBold32()+'<div class="seccion"><h3 style="font-size:22px">Retiros de creadores</h3><p class="suave peq">Un creador puede pedir su pago cuando tenga estos seguidores y este acumulado.</p><div class="fila" style="align-items:end;flex-wrap:wrap"><div><label class="l" for="frs">Seguidores mínimos</label><input id="frs" type="number" min="0" step="100" value="'+retSeg()+'" style="width:130px"></div><div><label class="l" for="fru">Mínimo en dólares</label><input id="fru" type="number" min="0" step="10" value="'+(S.cfg.retUSD==null?100:S.cfg.retUSD)+'" style="width:110px"></div><div><label class="l" for="ftr">Dólar (TRM)</label><input id="ftr" type="number" min="1000" step="50" value="'+(S.cfg.trm==null?3300:S.cfg.trm)+'" style="width:110px"></div><button class="btn" onclick="S.cfg.retSeg=+$(\'#frs\').value;S.cfg.retUSD=+$(\'#fru\').value;S.cfg.trm=+$(\'#ftr\').value;bit(\'Cambió las reglas de retiro\');guardarS();render();toast(\'Guardado.\')">Guardar</button></div></div>'};
 
+/* v32g · Versión de Google Play: sin pagos de cosas digitales dentro de la app (política de Google en Colombia).
+   La app de Play abre red.skynetgenesis.com/?app=play. Lo que la persona compra en la página web con Bold
+   aparece en su cuenta y lo usa en la app. Productos físicos de la tienda, anticipos de reservas y donaciones sí se pagan con Bold. */
+const PLAY=(()=>{try{
+ if(/[?&]app=play\b/.test(location.search)||String(document.referrer).indexOf('android-app://com.skynetgenesis.red')===0)sessionStorage.setItem('sk_play','1');
+ return sessionStorage.getItem('sk_play')==='1'}catch(e){return false}})();
+let _fisico=false;
+function playFisico(fn){return function(){_fisico=true;try{return fn.apply(this,arguments)}finally{_fisico=false}}}
+if(PLAY){pagarCompra=playFisico(pagarCompra);reservarCup=playFisico(reservarCup);pagarDon=playFisico(pagarDon)}
+function playNoDisponible(){return '<h2>No disponible en la app</h2><p>Esta opción no está disponible en la app de Google Play.</p><p class="suave">Todo lo que ya tienes en tu cuenta funciona aquí igual.</p><button class="btn" onclick="cerrarModal()">Entendido</button>'}
+function modal(h){
+ if(typeof h==='string'&&h.includes('Simular pago aprobado')){
+  if(PLAY&&!_fisico)h=playNoDisponible();
+  else if(PROD)h=prodPagoHtml(h)}
+ return modal0(h)}
+// En la app de Play no se muestran precios ni botones para comprar cosas digitales (sí productos físicos, reservas y donaciones).
+const PLAY_FN=/^\s*(activarPlan|activarPremium|comprarJ|comprarMin|comprarPack|crearCanal|pagarCanal|renovarCanal|nuevaOferta|pagarOferta|pagarPlan|pagarPremium|pagarPromo|pagarRegalo|promocionar|regalar|regalarVivo|prodPagar(?=\(true)|solicitarSello|ofertaVilla)\(|'tienda'/;
+const PLAY_LIBRE='.prod,.cauT,.cupT,.cup,.ofT';
+function playLimpiar(){if(!PLAY)return;
+ if(window.S&&S.jpest==='tienda'){S.jpest='ciudad';setTimeout(render,0)}
+ document.querySelectorAll('[onclick]').forEach(el=>{if(el.closest(PLAY_LIBRE))return;if(PLAY_FN.test(el.getAttribute('onclick')||''))el.style.display='none'});
+ document.querySelectorAll('#app *,#capa *').forEach(el=>{if(el.children.length>3||el.closest(PLAY_LIBRE)||el.style.display==='none')return;
+  const t=[...el.childNodes].filter(n=>n.nodeType===3).map(n=>n.textContent).join('');
+  if(/\$\s?\d/.test(t)&&!/anticipo|Donas|Llega a la causa|reserva/i.test(t))el.style.display='none'})}
+if(PLAY){let _plT=0;new MutationObserver(()=>{clearTimeout(_plT);_plT=setTimeout(playLimpiar,30)}).observe(document.documentElement,{childList:true,subtree:true});setTimeout(playLimpiar,500)}
+
 migrar25();migrar27();migrar28();migrar29();migrar32();if(PROD)prodIniciar();
 render();
 iniciarTraduccion();
