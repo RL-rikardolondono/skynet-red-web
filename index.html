@@ -3019,6 +3019,51 @@ function playLimpiar(){if(!PLAY)return;
   if(/\$\s?\d/.test(t)&&!/anticipo|Donas|Llega a la causa|reserva/i.test(t))el.style.display='none'})}
 if(PLAY){let _plT=0;new MutationObserver(()=>{clearTimeout(_plT);_plT=setTimeout(playLimpiar,30)}).observe(document.documentElement,{childList:true,subtree:true});setTimeout(playLimpiar,500)}
 
+/* v32h · Cuentas oficiales del grupo SkyNet Genesis y causas solidarias
+   El superadministrador crea las cuentas de las empresas del grupo (sello oficial, sin cobro) y nombra sus gestores.
+   Un gestor entra a la cuenta de la empresa desde Configuración sin otra contraseña y vuelve a la suya con un toque. */
+function tieneSello(u){return !!(u&&u.verif&&(u.id==='skynet'||u.oficial||planAct(u,u.tipo==='persona'?['verificado','premium']:'empresa')))}
+const _TOK_YO='sng_red_tok_yo';
+function grupoOficiales(){return Object.values(S.U||{}).filter(u=>u&&u.oficial&&u.tipo!=='super'&&u.tipo!=='mod')}
+function idPropio(){try{return localStorage.getItem('sng_red_yo_id')||S.me}catch(e){return S.me}}
+function misCuentasOf(){const yoId=idPropio();return grupoOficiales().filter(u=>(u.gestores||[]).includes(yoId)&&u.id!==S.me)}
+async function usarCuenta(id){if(!PROD)return toast('Disponible en la red real.');
+ try{const r=await prodApi('/api/perfil/usar',{id});
+  try{if(!localStorage.getItem(_TOK_YO)){localStorage.setItem(_TOK_YO,_tok);localStorage.setItem('sng_red_yo_id',S.me)}localStorage.setItem('sng_red_tok',r.token)}catch(e){}
+  _tok=r.token;modal('<h2>Cambiando de cuenta…</h2><p class="suave">Entrando como '+esc((U(id)||{}).nombre||'la empresa')+'.</p>');await prodCargar();toast('Ahora publicas como '+esc((U(id)||{}).nombre||''))}
+ catch(e){toast(e.message)}}
+async function volverMiCuenta(){let t=null;try{t=localStorage.getItem(_TOK_YO)}catch(e){}if(!t)return;
+ try{await prodApi('/api/salir',{})}catch(e){}
+ try{localStorage.setItem('sng_red_tok',t);localStorage.removeItem(_TOK_YO);localStorage.removeItem('sng_red_yo_id')}catch(e){}
+ _tok=t;modal('<h2>Volviendo a tu cuenta…</h2>');await prodCargar();toast('Volviste a tu cuenta personal.')}
+function bloqueCuentasOf(){let prev=null;try{prev=localStorage.getItem(_TOK_YO)}catch(e){}
+ const l=misCuentasOf();if(!prev&&!l.length)return '';
+ return '<div class="cfgtit">Cuentas que administras</div><div class="seccion" style="padding-top:4px">'+
+  (prev?'<div class="aviso az peq" style="margin-bottom:8px">Estás usando la cuenta <b>'+esc(yo().nombre)+'</b>. Lo que publiques sale a su nombre.</div><button class="btn" onclick="volverMiCuenta()">Volver a mi cuenta personal</button>':'')+
+  l.map(u=>'<div class="fila" style="justify-content:space-between;margin-top:8px"><span>'+avatar(u,34)+'</span><span style="flex:1;margin-left:8px"><b>'+esc(u.nombre)+'</b> '+(tieneSello(u)?'<span class="suave peq">✔ oficial</span>':'')+'<br><span class="suave peq">@'+esc(u.u)+'</span></span><button class="btn sec chico" onclick="usarCuenta(\''+u.id+'\')">Usar esta cuenta</button></div>').join('')+'</div>'}
+const _vConfigH=vConfig;
+vConfig=function(){const h=_vConfigH();const b=bloqueCuentasOf();if(!b)return h;const i=h.indexOf('<div class="cfgtit">');return i<0?h+b:h.slice(0,i)+b+h.slice(i)};
+// Panel del superadministrador
+const _panelBoldH=panelBold;
+panelBold=function(){return _panelBoldH()+panelGrupo()};
+function panelGrupo(){if(!PROD||yo().tipo!=='super')return '';const of=grupoOficiales();
+ return '<div class="seccion"><h3 style="font-size:22px">Cuentas oficiales del grupo</h3><p class="suave peq">Empresas de SkyNet Genesis: llevan sello oficial sin pagar plan. Sus gestores entran desde Configuración › Cuentas que administras.</p>'+
+ (of.length?of.map(u=>'<div class="fila" style="justify-content:space-between;margin:6px 0;flex-wrap:wrap"><span><b>'+esc(u.nombre)+'</b> <span class="suave peq">@'+esc(u.u)+' · gestores: '+((u.gestores||[]).map(g=>'@'+esc((U(g)||{}).u||g)).join(', ')||'ninguno')+'</span></span><span><button class="btn sec chico" onclick="editarGestores(\''+u.id+'\')">Gestores</button> <button class="btn sec chico" onclick="usarCuenta(\''+u.id+'\')">Usar</button></span></div>').join(''):'<p class="suave">Aún no hay cuentas oficiales.</p>')+
+ '<button class="btn" onclick="formCuentaOf()">+ Crear cuenta oficial</button></div>'+
+ '<div class="seccion"><h3 style="font-size:22px">Causas solidarias</h3><p class="suave peq">Solo entidades sin ánimo de lucro verificadas. Cada donación se paga con Bold y se muestra el servicio de la plataforma antes de pagar.</p>'+
+ ((S.CAU||[]).length?(S.CAU||[]).map(c=>'<div class="peq" style="margin:4px 0">💚 <b>'+esc(c.tit)+'</b> · '+esc(c.nombre)+' · meta '+pesos(c.meta)+' · recaudado '+pesos(c.rec||0)+'</div>').join(''):'<p class="suave">Aún no hay causas.</p>')+
+ '<button class="btn" onclick="formCausa()">+ Crear causa solidaria</button></div>'}
+function formCuentaOf(){modal('<h2>Nueva cuenta oficial</h2><label>Nombre visible</label><input id="co1" maxlength="50" placeholder="Ej.: POLIANDES"><label>Usuario (@)</label><input id="co2" maxlength="20" placeholder="poliandes"><label>Correo de la cuenta</label><input id="co3" type="email" placeholder="poliandes@poliandes.com"><label>Tipo</label><select id="co4"><option value="institucion">Institución</option><option value="empresa">Empresa</option></select><label>NIT</label><input id="co5" maxlength="15"><label>Categoría</label><input id="co6" maxlength="40" placeholder="Educación, Salud, Tecnología…"><label>Ciudad</label><input id="co7" value="Santa Marta" maxlength="40"><label>Descripción</label><textarea id="co8" maxlength="300"></textarea><label>Página web</label><input id="co9" maxlength="100" placeholder="https://"><label>Gestores (@usuarios separados por coma)</label><input id="co10" placeholder="@ricardo"><div class="fila" style="margin-top:10px"><button class="btn" onclick="crearCuentaOf()">Crear cuenta</button><button class="btn sec" onclick="cerrarModal()">Cancelar</button></div>')}
+async function crearCuentaOf(){const v=k=>($('#'+k)||{}).value||'';
+ try{const r=await prodApi('/api/admin/cuenta-oficial',{nombre:v('co1').trim(),u:v('co2').trim().replace(/^@/,''),correo:v('co3').trim(),tipo:v('co4'),nit:v('co5').trim(),cat:v('co6').trim(),ciudad:v('co7').trim(),bio:v('co8').trim(),web:v('co9').trim(),gestores:v('co10').split(',').map(x=>x.trim()).filter(Boolean)});
+  S.U[r.id]=r.U;cerrarModal();await prodSync();render();toast('Cuenta oficial creada: '+r.U.nombre)}catch(e){toast(e.message)}}
+function editarGestores(id){const u=U(id);modal('<h2>Gestores de '+esc(u.nombre)+'</h2><p class="suave peq">Personas que pueden entrar a esta cuenta y publicar a su nombre.</p><input id="gst" value="'+esc((u.gestores||[]).map(g=>'@'+((U(g)||{}).u||'')).join(', '))+'"><div class="fila" style="margin-top:10px"><button class="btn" onclick="guardarGestores(\''+id+'\')">Guardar</button><button class="btn sec" onclick="cerrarModal()">Cancelar</button></div>')}
+async function guardarGestores(id){try{const r=await prodApi('/api/admin/gestores',{id,gestores:$('#gst').value.split(',').map(x=>x.trim()).filter(Boolean)});U(id).gestores=r.gestores;cerrarModal();await prodSync();render();toast('Gestores guardados.')}catch(e){toast(e.message)}}
+function formCausa(){const of=grupoOficiales();modal('<h2>Nueva causa solidaria</h2><label>Entidad que recibe</label><select id="ca1">'+of.map(u=>'<option value="'+u.id+'">'+esc(u.nombre)+'</option>').join('')+'<option value="">Otra entidad (escribir nombre)</option></select><input id="ca1b" placeholder="Nombre de la entidad (si es otra)" maxlength="60"><label>Título</label><input id="ca2" maxlength="80"><label>Descripción (en qué se usa el dinero)</label><textarea id="ca3" maxlength="400"></textarea><label>Meta en pesos</label><input id="ca4" type="number" min="100000" step="100000" value="5000000"><div class="fila" style="margin-top:10px"><button class="btn" onclick="crearCausa()">Publicar causa</button><button class="btn sec" onclick="cerrarModal()">Cancelar</button></div>')}
+function crearCausa(){const eid=$('#ca1').value,e=eid?U(eid):null,nombre=e?e.nombre:$('#ca1b').value.trim(),tit=$('#ca2').value.trim(),desc=$('#ca3').value.trim(),meta=Math.round(+$('#ca4').value||0);
+ if(nombre.length<3||tit.length<6||desc.length<20||meta<100000)return toast('Completa entidad, título, descripción (20 letras) y una meta desde $100.000.');
+ S.CAU=S.CAU||[];S.CAU.unshift({id:uid(),cuenta:eid||null,nombre,tit,desc,meta,rec:0,don:[],verif:'Entidad sin ánimo de lucro verificada por SkyNet Genesis',f:ahora()});guardarS();cerrarModal();render();toast('Causa publicada.')}
+
 migrar25();migrar27();migrar28();migrar29();migrar32();if(PROD)prodIniciar();
 render();
 iniciarTraduccion();
