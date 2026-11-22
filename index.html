@@ -3225,6 +3225,60 @@ guardarPerfil=function(){const i=$('#e3');if(i&&i.value.trim()){const c=ciudadCa
 setTimeout(function migCiu(){try{const u=S.me&&yo();if(u&&u.ciudad&&!ciuIx().LAB.has(normP(u.ciudad))){const c=ciudadCanon(u.ciudad);if(c&&c!==u.ciudad){u.ciudad=c;guardarS()}}}catch(e){}},5000);
 (function(){const st=document.createElement('style');st.textContent='.sugCiu{background:#fff;border:1px solid var(--borde);border-radius:12px;box-shadow:0 8px 20px rgba(0,0,0,.12);max-height:300px;overflow:auto}.sugCiu button{display:flex;flex-direction:column;align-items:flex-start;width:100%;border:0;background:#fff;padding:8px 12px;text-align:left;cursor:pointer;border-bottom:1px solid var(--borde)}.sugCiu button:hover{background:#E8F1FA}.sugCiu small{color:#5D6B78}.sugNo{padding:10px 12px;color:#5D6B78;font-size:14px}';document.head.appendChild(st)})();
 
+/* v45 · Cobro con Google Play en la app de Android (decisión del dueño, 21 nov 2026).
+   En la app de Play Store lo digital se paga con Google Play, al MISMO precio que en la web (Google se queda con su 15 %).
+   Cada precio es un producto de Play Console: cop_<valor>. Productos físicos, anticipos de reservas y donaciones siguen con Bold.
+   Lo que no tiene producto en Play (promociones, ofertas, valores fuera de la lista) no se ofrece en la app. */
+const PLAY_PRECIOS=[1000,2900,3900,4900,5000,5900,6900,7900,9900,14900,20000,24900,29900,50000,79900,149900,199900,490000,1490000];
+const PLAY_DGS=PLAY&&('getDigitalGoodsService' in window);
+const playSku=v=>{v=Math.ceil((+v||0)/100)*100;return PLAY_PRECIOS.includes(v)?'cop_'+v:null};
+function playAPagos(h){ // cambia los textos de Bold por Google Play en un pago digital
+ return h.replace(/<h2>Pago con Bold<\/h2>/g,'<h2>Pago con Google Play</h2>')
+  .replace(/<div class="aviso az peq">🛡 Pagas en la página segura de Bold[^<]*<\/div>/,'<div class="aviso az peq">🛡 Pagas con Google Play, con la forma de pago de tu cuenta de Google. SKYNET nunca ve los datos de tu tarjeta.</div>')
+  .replace(/<button class="btn" onclick="prodPagar\(\)">Pagar con Bold<\/button>/,'<button class="btn" onclick="playPagar()">Pagar con Google Play</button>')}
+function modal(h){
+ if(typeof h==='string'&&h.includes('Simular pago aprobado')){
+  if(PLAY&&!_fisico){
+   const h2=prodPagoHtml(h),p=window._pagoPend;
+   h=(PLAY_DGS&&p&&playSku(p.valor))?playAPagos(h2):playNoDisponible()}
+  else if(PROD)h=prodPagoHtml(h)}
+ else if(PLAY&&!_fisico&&typeof h==='string')h=h.replace(/Pagar con Bold/g,'Pagar con Google Play').replace(/Pagas con Bold \(tarjeta, PSE, Nequi o Daviplata\)\.?/g,'Pagas con Google Play.')
+ return modal0(h)}
+function playPend(sku,id){try{const l=JSON.parse(localStorage.getItem('sk_playpend')||'{}');if(id)l[sku]=id;else delete l[sku];localStorage.setItem('sk_playpend',JSON.stringify(l))}catch(e){}}
+function playPendDe(sku){try{return (JSON.parse(localStorage.getItem('sk_playpend')||'{}'))[sku]||null}catch(e){return null}}
+let _playOcup=false;
+async function playPagar(){const p=window._pagoPend;if(!p||_playOcup)return;_playOcup=true;
+ try{const r=await prodApi('/api/play/pedido',{tipo:p.tipo,k:p.k,valor:p.valor,desc:p.desc});p.id=r.id;prodGuardarPend(p);
+  const svc=await window.getDigitalGoodsService('https://play.google.com/billing');
+  const det=await svc.getDetails([r.sku]);if(!det||!det.length){toast('Esta compra todavía no está disponible en Google Play. Intenta más tarde.');return}
+  playPend(r.sku,r.id);
+  const pr=new PaymentRequest([{supportedMethods:'https://play.google.com/billing',data:{sku:r.sku}}],{total:{label:'Total',amount:{currency:'COP',value:'0'}}});
+  const resp=await pr.show(),token=resp.details&&resp.details.purchaseToken;
+  if(!token){await resp.complete('fail').catch(()=>{});toast('Google Play no confirmó la compra.');return}
+  modal0('<h2>Confirmando tu compra…</h2><p class="suave">Google Play aprobó el pago. Estamos activando lo que compraste.</p>');
+  let c;try{c=await prodApi('/api/play/compra',{id:r.id,sku:r.sku,token})}catch(e){c={ok:false,error:e.message}}
+  await resp.complete(c.ok?'success':'fail').catch(()=>{});
+  if(c.ok){playPend(r.sku);await prodRevisarPago(r.id,false)}
+  else{modal0('<h2>'+(c.pendiente?'Pago en espera':'No pudimos confirmar la compra')+'</h2><p>'+esc(c.error||'Intenta de nuevo en un momento.')+'</p><button class="btn" onclick="cerrarModal()">Entendido</button>');if(c.pendiente)prodVigilar(r.id)}
+ }catch(e){if(e&&e.name!=='AbortError')toast(e.message&&!/Payment|getDigital/i.test(e.message)?e.message:'No se pudo abrir el pago de Google Play. Intenta de nuevo.')}
+ finally{_playOcup=false}}
+// Compras pagadas que no alcanzaron a confirmarse (se cerró la app o se fue la señal): el servidor no las aplica dos veces
+async function playRevisarCompras(){if(!PLAY_DGS||!window.S||!S.me)return;
+ try{const svc=await window.getDigitalGoodsService('https://play.google.com/billing'),l=await svc.listPurchases();
+  for(const c of l){if(!/^cop_\d+$/.test(c.itemId))continue;const id=playPendDe(c.itemId);
+   const r=await prodApi('/api/play/compra',{id,sku:c.itemId,token:c.purchaseToken}).catch(()=>null);
+   if(r&&r.ok){playPend(c.itemId);if(r.ped&&r.ped.id)await prodRevisarPago(r.ped.id,false)}}}catch(e){}}
+if(PLAY_DGS)setTimeout(playRevisarCompras,6000);
+// En la app de Play ya se pueden comprar planes, regalos, la tienda de la ciudad y el canal; siguen ocultas las promociones y las ofertas (valores variables)
+const PLAY_FN2=/^\s*(nuevaOferta|pagarOferta|pagarPromo|promocionar|prodPagar(?=\(true))\(/;
+function playLimpiar(){if(!PLAY)return;
+ if(!PLAY_DGS){if(window.S&&S.jpest==='tienda'){S.jpest='ciudad';setTimeout(render,0)}}
+ document.querySelectorAll('[onclick]').forEach(el=>{if(el.closest(PLAY_LIBRE))return;const oc=el.getAttribute('onclick')||'';if((PLAY_DGS?PLAY_FN2:PLAY_FN).test(oc))el.style.display='none'});
+ document.querySelectorAll('#app *,#capa *').forEach(el=>{if(el.children.length>3||el.closest(PLAY_LIBRE)||el.style.display==='none')return;
+  for(const n of el.childNodes){if(n.nodeType!==3)continue;const t=n.textContent;
+   if(PLAY_DGS){if(/\bBold\b/.test(t)&&!/anticipo|Don|causa|reserva|producto/i.test(t))n.textContent=t.replace(/Pagar con Bold/g,'Pagar con Google Play').replace(/con Bold/g,'con Google Play').replace(/\bBold\b/g,'Google Play')}
+   else if(/\$\s?\d/.test(t)&&!/anticipo|Donas|Llega a la causa|reserva/i.test(t)){el.style.display='none';break}}})}
+
 migrar25();migrar27();migrar28();migrar29();migrar32();if(PROD)prodIniciar();
 render();
 iniciarTraduccion();
