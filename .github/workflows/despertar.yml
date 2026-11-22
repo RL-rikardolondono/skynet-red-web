@@ -1,0 +1,13 @@
+name: Despertar SKYNET
+# De día (6 a. m. a 10 p. m. hora de Colombia) mantiene despierto el servidor de la red social en Render.
+on:
+  schedule:
+    - cron: '*/10 11-23 * * *'
+    - cron: '*/10 0-2 * * *'
+  workflow_dispatch:
+jobs:
+  despertar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - run: curl -s -m 90 -o /dev/null -w "%{http_code}\n" https://skynet-red.onrender.com/health || true
