@@ -3128,6 +3128,9 @@ PROTEGIDOS.push(...[["Misión Carismática Internacional","nacional"],["MCI Igle
 const vistaPortada35=vistaPortada;
 vistaPortada=function(){let h=vistaPortada35.apply(this,arguments);
  return h.replace('<button onclick="verReglas()">Privacidad</button>','<button onclick="location.href=\'/privacidad.html\'">Privacidad</button><button onclick="location.href=\'/terminos.html\'">Términos</button>')};
+const LEGAL35='<p class="suave peq" style="margin:10px 0 0"><a href="/privacidad.html" target="_blank" rel="noopener">Política de privacidad</a> · <a href="/terminos.html" target="_blank" rel="noopener">Términos de uso</a></p>';
+const misDatos35=misDatos;
+misDatos=function(){const h=misDatos35.apply(this,arguments);return h.replace('onclick="borrarCuenta()">Borrar mi cuenta</button>','onclick="borrarCuenta()">Borrar mi cuenta</button>'+LEGAL35)};
 const vConfig35=vConfig;
 vConfig=function(){let h=vConfig35.apply(this,arguments);
  return h.replace('onclick="borrarCuenta()">Borrar mi cuenta</button>','onclick="borrarCuenta()">Borrar mi cuenta</button><p class="suave peq" style="margin:10px 0 0"><a href="/privacidad.html" target="_blank" rel="noopener">Política de privacidad</a> · <a href="/terminos.html" target="_blank" rel="noopener">Términos de uso</a></p>')};
