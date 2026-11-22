@@ -1,0 +1,11 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.skynetgenesis.red",
+    "sha256_cert_fingerprints": [
+      "04:B9:AB:AF:0E:02:14:A7:9F:1A:FC:DA:7D:23:6C:C3:54:73:63:15:AB:8D:CE:4A:02:5D:54:32:F6:2A:AA:0B",
+      "C5:34:38:D9:E5:56:26:52:0A:A5:84:AB:15:EF:DB:0D:5F:51:AF:98:66:9A:34:FE:56:38:E6:C2:C8:62:95:90"
+    ]
+  }
+}]
