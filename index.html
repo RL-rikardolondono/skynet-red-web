@@ -3151,10 +3151,10 @@ PROTEGIDOS.push(...[["ServiceNow","global"],["Confluence","global"],["Akamai","g
 
 /* v38 · Insignias por orden de llegada (22 nov 2026, decisión del señor):
    👑 Creador de SKYNET: solo la cuenta del señor (@ricardolondono, cuenta n.º 1).
-   💎 primeros 10 · 🥇 primeros 100 · 🥈 primeros 1.000 · 🥉 primeros 10.000 (personas, por número de cuenta que da el servidor).
+   💎 primeros 10 · 🏅 primeros 100 · 🛡️ primeros 1.000 · 🚀 primeros 10.000 (sin números: ninguna se ve como 2.º o 3.er puesto) (personas, por número de cuenta que da el servidor).
    Cada persona lleva solo la del grupo más pequeño al que pertenece; quedan para siempre. Se ven junto al nombre y en el perfil. */
 const CREADOR_U='ricardolondono';
-const NIVELES_NRO=[[10,'💎','Pionero de los 10'],[100,'🥇','Pionero de los 100'],[1000,'🥈','Pionero de los 1.000'],[10000,'🥉','Pionero de los 10.000']];
+const NIVELES_NRO=[[10,'💎','Pionero de los 10'],[100,'🏅','Pionero de los 100'],[1000,'🛡️','Pionero de los 1.000'],[10000,'🚀','Pionero de los 10.000']];
 const esCreadorRed=u=>!!(u&&u.u===CREADOR_U);
 function nivelNro(u){if(!u)return null;if(esCreadorRed(u))return ['👑','Creador de SKYNET','creador'];if(!esPer(u)||!u.nro)return null;const n=NIVELES_NRO.find(x=>u.nro<=x[0]);return n?[n[1],n[2],'pio']:null}
 function insigniaNro(u,mini){const n=nivelNro(u);if(!n)return '';const txt=esCreadorRed(u)?'Creador de SKYNET: la cuenta n.º 1, de quien creó esta red.':n[1]+': entró a SKYNET con la cuenta n.º '+num(u.nro)+'. Es para siempre.';
