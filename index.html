@@ -3199,10 +3199,12 @@ function ciuIx(){if(_ciuIx)return _ciuIx;const LAB=new Map(),NOM=new Map(),PAI=n
 function ciudadCanon(v){const I=ciuIx();let n=normP(v);if(!n)return null;if(ALIAS_CIU[n])n=normP(ALIAS_CIU[n]);let e=I.LAB.get(n);if(e)return e.l;const m=I.NOM.get(n);if(m&&m.length)return m[0].l;
  const k=String(v).lastIndexOf(',');if(k>0){const nom=String(v).slice(0,k).trim(),p=I.PAI.get(normP(String(v).slice(k+1)));if(nom&&p){const e2=I.LAB.get(normP(nom+', '+p.p));if(e2)return e2.l;const m2=(I.NOM.get(normP(nom))||[]).find(x=>x.r.endsWith(p.p));if(m2)return m2.l;return (nom.slice(0,38-p.p.length)+', '+p.p)}}
  return null}
-function codCiudad(lab){const I=ciuIx(),e=I.LAB.get(normP(lab||''));if(e)return e.c;const k=String(lab||'').lastIndexOf(',');if(k>0){const p=I.PAI.get(normP(String(lab).slice(k+1)));if(p)return p.c}const m=I.NOM.get(normP(lab||''));return m&&m.length?m[0].c:8999}
+var codCiudad=function(lab){const I=ciuIx(),e=I.LAB.get(normP(lab||''));if(e)return e.c;const k=String(lab||'').lastIndexOf(',');if(k>0){const p=I.PAI.get(normP(String(lab).slice(k+1)));if(p)return p.c}const m=I.NOM.get(normP(lab||''));return m&&m.length?m[0].c:8999}
 function ciuBase(lab){return String(lab||'').replace(/\s*\(.*\)$/,'').replace(/,.*$/,'')}
 bancoNom=function(u){return 'Banco SkyNet'+(u&&u.ciudad?' de '+ciuBase(u.ciudad):'')};
-nroBanco=function(u){return 'SKY-'+codCiudad(u.ciudad)+'-'+String(u.nro||0).padStart(7,'0')};
+/* v43 · Santa Marta, la ciudad donde nació SKYNET, es la n.º 1 (decisión del señor): su cuenta queda SKY-0001-0000001. */
+const _codCiudad43=codCiudad;codCiudad=function(lab){return normP(ciudadCanon(lab)||lab||'')==='santa marta'?1:_codCiudad43(lab)};
+nroBanco=function(u){return 'SKY-'+String(codCiudad(u.ciudad)).padStart(4,'0')+'-'+String(u.nro||0).padStart(7,'0')};
 let _rkCiu=null;function rkCiu(l,i){if(!_rkCiu){_rkCiu=new Map();GRANDES_CO.forEach((g,k)=>_rkCiu.set(normP(g),k-1000))}const r=_rkCiu.get(normP(l));return r!=null?r:i}
 function sugCiudades(q){let n=normP(q);if(n.length<2)return [];if(ALIAS_CIU[n])n=normP(ALIAS_CIU[n]);const a=[];CIU41.c.forEach(([l,reg,c],i)=>{const ln=normP(l);const pre=ln.startsWith(n),pal=!pre&&ln.includes(' '+n);if(pre||pal)a.push([l,reg,(pal?100000:0)+rkCiu(l,i)])});a.sort((x,y)=>x[2]-y[2]);return a.slice(0,8)}
 function cajaSug(inp){let b=document.getElementById('sugCiu');if(!b){b=document.createElement('div');b.id='sugCiu';b.className='sugCiu';document.body.appendChild(b)}
