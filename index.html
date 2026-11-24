@@ -3279,6 +3279,73 @@ function playLimpiar(){if(!PLAY)return;
    if(PLAY_DGS){if(/\bBold\b/.test(t)&&!/anticipo|Don|causa|reserva|producto/i.test(t))n.textContent=t.replace(/Pagar con Bold/g,'Pagar con Google Play').replace(/con Bold/g,'con Google Play').replace(/\bBold\b/g,'Google Play')}
    else if(/\$\s?\d/.test(t)&&!/anticipo|Donas|Llega a la causa|reserva/i.test(t)){el.style.display='none';break}}})}
 
+/* ================= v46 · Perfil oculto y cuentas privadas con aprobación ================= */
+PREF0.oculto=false;
+const _UQ=id=>(S.U&&S.U[id])||null;
+const privOc=u=>!!u&&(u._oc||pref(u).privada||pref(u).oculto);
+// ¿Esta persona me oculta su perfil? (en la app real el servidor ya manda solo el @usuario)
+function ocultoPara(u){if(!u||!S.me||!yo()||u.id===S.me||esMod())return false;return !!(u._oc||(pref(u).oculto&&!(u.segs||[]).includes(S.me)))}
+function pidioSeguir(u){return !!u&&(u.solseg||[]).includes(S.me)}
+
+/* ---- Configuración: la opción «Perfil oculto» ---- */
+const _vConfigQ=vConfig;
+vConfig=function(){let h=_vConfigQ();const u=yo();if(!u||u.tipo==='super')return h;
+ const li=opc('oculto','Perfil oculto','Quien no sea tu seguidor aprobado no ve tu foto, tu nombre, tu descripción, tu ciudad ni lo que publicas. Solo ve tu @usuario.');
+ const k=h.indexOf('<li><div><b>Aparecer en las búsquedas</b>');
+ return k>=0?h.slice(0,k)+li+h.slice(k):h};
+const _ponerPrefQ=ponerPref;
+ponerPref=function(k,v){const u=yo();
+ if(k==='oculto'){u.pref=Object.assign({},u.pref||{},v?{oculto:true,privada:true,buscable:false,enlinea:false}:{oculto:false});guardarS();render();
+  return modal(v?'<h2>Tu perfil quedó oculto</h2><p>Quien no sea tu seguidor aprobado solo ve tu @usuario y el aviso «Cuenta privada». No ve tu foto, tu nombre, tu descripción, tu ciudad ni lo que publicas.</p><p class="suave">Cuando alguien te pida seguirte, lo apruebas o lo rechazas desde tu perfil. Por seguridad, Moderación sí puede ver tu cuenta si alguien la reporta.</p><button class="btn" onclick="cerrarModal()">Entendido</button>':'<h2>Tu perfil vuelve a verse</h2><p>Tu cuenta sigue privada: lo que publicas solo lo ven tus seguidores aprobados. Puedes cambiarlo en «Cuenta privada».</p><button class="btn" onclick="cerrarModal()">Entendido</button>')}
+ if(k==='privada'&&!v&&pref(u).oculto){u.pref=Object.assign({},u.pref||{},{privada:false,oculto:false});guardarS();render();return toast('Tu cuenta ya no es privada ni oculta.')}
+ return _ponerPrefQ(k,v)};
+
+/* ---- Seguir a una cuenta privada u oculta: se envía una solicitud ---- */
+const _seguir0Q=seguir0;
+seguir0=function(id){const a=yo(),b=_UQ(id);
+ if(b&&id!==S.me&&!a.seg.includes(id)&&privOc(b)&&!(b.segs||[]).includes(S.me)){
+  b.solseg=b.solseg||[];const i=b.solseg.indexOf(S.me);
+  if(i>=0){b.solseg.splice(i,1);guardarS();render();return toast('Retiraste tu solicitud.')}
+  b.solseg.push(S.me);notif(id,a.nombre+' quiere seguirte. Apruébalo o recházalo en tu perfil.','perfil');guardarS();render();
+  return toast('Solicitud enviada. Cuando la apruebe, verás lo que publica.')}
+ return _seguir0Q(id)};
+function aprobarSeg(id,si){const me=yo(),o=_UQ(id);me.solseg=(me.solseg||[]).filter(x=>x!==id);
+ if(si&&o){if(!(me.segs||[]).includes(id))me.segs.push(id);o.seg=o.seg||[];if(!o.seg.includes(me.id))o.seg.push(me.id);notif(id,me.nombre+' aprobó tu solicitud. Ya ves lo que publica.','perfil')}
+ guardarS();render();toast(si?'Aprobado: ahora te sigue.':'Solicitud rechazada. No le avisamos.')}
+function cajaSolicitudes(){const l=(yo().solseg||[]).map(_UQ).filter(Boolean);if(!l.length)return '';
+ return '<div class="seccion"><div class="aviso az"><b>Solicitudes para seguirte ('+l.length+')</b><p class="suave peq" style="margin:4px 0 8px">Solo quien apruebes verá lo que publicas'+(pref(yo()).oculto?' y tu perfil':'')+'.</p>'+
+  l.map(u=>'<div class="fila" style="gap:10px;align-items:center;margin-top:8px">'+avatar(u,38)+'<div style="flex:1"><b>'+esc(u.nombre)+'</b><div class="suave peq">@'+esc(u.u||'')+'</div></div><button class="btn chico" onclick="aprobarSeg(\''+u.id+'\',1)">Aprobar</button><button class="btn sec chico" onclick="aprobarSeg(\''+u.id+'\',0)">Rechazar</button></div>').join('')+'</div></div>'}
+
+/* ---- Perfil: lo que ve quien no es seguidor aprobado ---- */
+const _verPerfilQ=verPerfil;
+verPerfil=function(id){const u=_UQ(id);if(u&&ocultoPara(u)){S.perfilSel=id;S.ppest='pubs';return ir('perfil',true)}return _verPerfilQ(id)};
+const _vPerfilQ=vPerfil;
+vPerfil=function(){const u=_UQ(S.perfilSel||S.me);
+ if(u&&u.id===S.me){const h=_vPerfilQ(),cs=cajaSolicitudes();if(!cs)return h;const a=h.indexOf('<div class="cab">');if(a<0)return cs+h;
+  let d=0,k=a;const re=/<\/?div\b/g;re.lastIndex=a;let m;while((m=re.exec(h))){d+=m[0]==='<div'?1:-1;if(!d){k=h.indexOf('>',m.index)+1;break}}
+  return h.slice(0,k)+cs+h.slice(k)}
+ if(u&&ocultoPara(u)&&!(u.borrarEl||(u.bloq||[]).includes(S.me)||(yo().bloq||[]).includes(u.id))){const pid=pidioSeguir(u);
+  return '<div class="cab"><div class="fila" style="padding:8px 12px"><button class="ib" aria-label="Volver" onclick="ir(\'inicio\')">'+ic('atras')+'</button><b style="font-size:18px">Perfil</b><span style="flex:1"></span><button class="ib" aria-label="Opciones" onclick="opcPerfil(\''+u.id+'\')">⋯</button></div></div>'+
+   '<div class="vacio"><div class="hx" style="width:92px;height:92px;background:#DCE5EE;color:#5D6B78;font-size:40px;margin:0 auto 12px">🔒</div><h3>Cuenta privada</h3><p class="suave">@'+esc(u.u||'')+'</p><p>Esta persona mantiene su perfil oculto. Si te aprueba como seguidor, verás su perfil y lo que publica.</p>'+
+   '<button class="btn'+(pid?' sec':'')+'" onclick="seguir(\''+u.id+'\')">'+(pid?'Solicitud enviada · retirar':'Pedir seguir')+'</button></div>'}
+ let h=_vPerfilQ();
+ if(u&&u.id!==S.me&&privOc(u)&&!(u.segs||[]).includes(S.me)&&!yo().seg.includes(u.id))h=h.replace('>Seguir</button>','>'+(pidioSeguir(u)?'Solicitud enviada':'Pedir seguir')+'</button>');
+ return h};
+
+/* ---- Lo que publica una cuenta oculta no aparece a quien no es seguidor aprobado ---- */
+const _visibleQ=visible;
+visible=function(p){if(S.me&&yo()&&p&&p.autor&&p.autor!==S.me){const a=_UQ(p.autor);if(a&&ocultoPara(a))return false;
+  if(a&&pref(a).privada&&!esMod()&&!(a.segs||[]).includes(S.me))return false}
+ return _visibleQ(p)};
+
+/* ---- App real: al ser aprobado (o al quitarse el perfil oculto) se traen sus publicaciones ---- */
+if(typeof prodAplicar==='function'){const _paQ=prodAplicar;
+ prodAplicar=function(c,i,d){let pedir=false;
+  if(c==='U'&&S.me&&i!==S.me&&d&&!_cargando){const prev=S.U&&S.U[i];
+   if(prev&&!d._oc&&(prev._oc||(privOc(d)&&!(prev.segs||[]).includes(S.me)&&(d.segs||[]).includes(S.me))))pedir=true}
+  _paQ(c,i,d);
+  if(pedir)prodApi('/api/autor?id='+encodeURIComponent(i)).then(r=>{(r.docs||[]).forEach(x=>_paQ(x.c,x.i,x.d));prodRender()}).catch(()=>{})}}
+
 migrar25();migrar27();migrar28();migrar29();migrar32();if(PROD)prodIniciar();
 render();
 iniciarTraduccion();
