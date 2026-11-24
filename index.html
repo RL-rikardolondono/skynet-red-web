@@ -2020,7 +2020,7 @@ const ESCALA=[[1,'kiosco'],[3,'fuente'],[5,'torre'],[10,'castillo']];
 const SIMC={'Ciudad de México':11,'Bogotá':10,'Medellín':8,'Santa Marta':7,'Madrid':7,'Lima':6,'Buenos Aires':6,'Barranquilla':5,'Cali':5,'Guadalajara':4};
 const TEMAS=['La mejor vista desde tu ventana','El desayuno más rico','Tu mascota más dramática','Tu foto del día','Tu talento en una foto','El lugar más bonito de tu ciudad'];
 const COLM=['#7b5cff','#E0A21A','#14A38B','#1867B0','#e2335c','#1E3A4C'];
-const esPer=u=>u&&u.tipo==='persona',enRk=u=>esPer(u)&&u.u!=='ricardolondono';
+const esPer=u=>u&&u.tipo==='persona',enRk=u=>esPer(u)&&u.u!=='ricardolondono'&&!u._oc&&!(u.pref&&u.pref.oculto);
 function jg(u){if(!u.jg)u.jg={c:1000,ed:[{k:'casa',x:3,y:3,n:1},{k:'arbol',x:2,y:3,n:1}],hist:[{f:ahora(),t:'Bienvenida a Ciudad SkyNet: casa y árbol de regalo',c:1000}]};const j=u.jg;[['c',1000],['gan',0],['pend',0],['nMom',0],['dGan',0],['dJug',0]].forEach(([k,v])=>{if(j[k]==null)j[k]=v});['ed','inv','tro','hist','invitados','desb','lk'].forEach(k=>{if(!Array.isArray(j[k]))j[k]=[]});if(!j.cob)j.cob=ahora();return j}
 const pobl=u=>jg(u).ed.reduce((a,b)=>a+(EDI[b.k]?EDI[b.k].h*nEf(b):0),0);
 const prodH=u=>jg(u).ed.reduce((a,b)=>a+(EDI[b.k]?EDI[b.k].p*nEf(b):0),0)*(paseAct(u)?2:1);
@@ -3296,7 +3296,7 @@ vConfig=function(){let h=_vConfigQ();const u=yo();if(!u||u.tipo==='super')return
 const _ponerPrefQ=ponerPref;
 ponerPref=function(k,v){const u=yo();
  if(k==='oculto'){u.pref=Object.assign({},u.pref||{},v?{oculto:true,privada:true,buscable:false,enlinea:false}:{oculto:false});guardarS();render();
-  return modal(v?'<h2>Tu perfil quedó oculto</h2><p>Quien no sea tu seguidor aprobado solo ve tu @usuario y el aviso «Cuenta privada». No ve tu foto, tu nombre, tu descripción, tu ciudad ni lo que publicas.</p><p class="suave">Cuando alguien te pida seguirte, lo apruebas o lo rechazas desde tu perfil. Por seguridad, Moderación sí puede ver tu cuenta si alguien la reporta.</p><button class="btn" onclick="cerrarModal()">Entendido</button>':'<h2>Tu perfil vuelve a verse</h2><p>Tu cuenta sigue privada: lo que publicas solo lo ven tus seguidores aprobados. Puedes cambiarlo en «Cuenta privada».</p><button class="btn" onclick="cerrarModal()">Entendido</button>')}
+  return modal(v?'<h2>Tu perfil quedó oculto</h2><p>Quien no sea tu seguidor aprobado solo ve tu @usuario y el aviso «Cuenta privada». No ve tu foto, tu nombre, tu descripción, tu ciudad ni lo que publicas.</p><p class="suave">Cuando alguien te pida seguirte, lo apruebas o lo rechazas desde tu perfil. Por seguridad, Moderación sí puede ver tu cuenta si alguien la reporta.</p><div class="aviso am"><b>Mientras esté oculto:</b> no puedes vender ni ofrecer (ofertas, catálogo, promociones, canales de pago) ni recibir regalos; no apareces en los Imperios ni en los premios; no puedes crear comunidades ni grupos, y solo comentas en publicaciones de quienes aprobaste. Todo se restablece cuando vuelves a mostrar tu perfil.</div><button class="btn" onclick="cerrarModal()">Entendido</button>':'<h2>Tu perfil vuelve a verse</h2><p>Ya puedes volver a vender, recibir regalos, crear comunidades y grupos, comentar donde quieras y aparecer en los Imperios. Tu cuenta sigue privada: lo que publicas solo lo ven tus seguidores aprobados. Puedes cambiarlo en «Cuenta privada».</p><button class="btn" onclick="cerrarModal()">Entendido</button>')}
  if(k==='privada'&&!v&&pref(u).oculto){u.pref=Object.assign({},u.pref||{},{privada:false,oculto:false});guardarS();render();return toast('Tu cuenta ya no es privada ni oculta.')}
  return _ponerPrefQ(k,v)};
 
@@ -3345,6 +3345,18 @@ if(typeof prodAplicar==='function'){const _paQ=prodAplicar;
    if(prev&&!d._oc&&(prev._oc||(privOc(d)&&!(prev.segs||[]).includes(S.me)&&(d.segs||[]).includes(S.me))))pedir=true}
   _paQ(c,i,d);
   if(pedir)prodApi('/api/autor?id='+encodeURIComponent(i)).then(r=>{(r.docs||[]).forEach(x=>_paQ(x.c,x.i,x.d));prodRender()}).catch(()=>{})}}
+
+/* ---- v46b · Restricciones mientras el perfil está oculto (se restablecen al volver a mostrarlo) ---- */
+const esOcultoYo=()=>!!(S.me&&yo()&&pref(yo()).oculto);
+function avisoOculto(que){modal('<h2>🔒 No disponible con el perfil oculto</h2><p>Mientras tu perfil esté oculto no puedes '+que+'.</p><div class="aviso az"><b>Esta función se restablece</b> en cuanto vuelvas a mostrar tu perfil: Configuración › Privacidad › desactiva «Perfil oculto».</div><div class="fila"><button class="btn sec" onclick="cerrarModal()">Entendido</button><button class="btn" onclick="cerrarModal();ir(\'config\')">Ir a Configuración</button></div>');return true}
+[['nuevaOferta','publicar ofertas de empleo'],['promocionar','promocionar publicaciones'],['editarProd','vender productos en tu catálogo'],['guardarProd','vender productos en tu catálogo'],['crearCanal','abrir canales de pago'],['nuevaComunidad','crear comunidades'],['crearComunidad','crear comunidades'],['nuevoGrupo','crear grupos'],['crearGrupo','crear grupos']].forEach(([n,t])=>{
+ const f=window[n];if(typeof f!=='function')return;window[n]=function(){if(esOcultoYo())return avisoOculto(t);return f.apply(this,arguments)}});
+{const _com=window.comentar;window.comentar=function(id){const p=S.P.find(x=>x.id===id);
+  if(esOcultoYo()&&p&&p.autor!==S.me&&!(yo().segs||[]).includes(p.autor))return avisoOculto('comentar en publicaciones de personas que no has aprobado como seguidores');
+  return _com.apply(this,arguments)}}
+{const _reg=window.regalar;window.regalar=function(pid,para){const p=pid&&S.P.find(x=>x.id===pid),dest=_UQ(para||(p&&p.autor));
+  if(dest&&dest.id!==S.me&&(dest._oc||pref(dest).oculto))return toast('Esta cuenta tiene el perfil oculto: no recibe regalos ni pagos.');
+  return _reg.apply(this,arguments)}}
 
 migrar25();migrar27();migrar28();migrar29();migrar32();if(PROD)prodIniciar();
 render();
