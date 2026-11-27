@@ -3358,6 +3358,133 @@ function avisoOculto(que){modal('<h2>🔒 No disponible con el perfil oculto</h2
   if(dest&&dest.id!==S.me&&(dest._oc||pref(dest).oculto))return toast('Esta cuenta tiene el perfil oculto: no recibe regalos ni pagos.');
   return _reg.apply(this,arguments)}}
 
+/* ================= v48 · Zumbido, guiños animados y emoticones SKYNET (estilo Messenger, diseños propios) ================= */
+Object.assign(PREF0,{zumbidos:true,guinos:true,zNoche:false});
+const GUI=[['beso','💋','Beso',0],['abrazo','🤗','Abrazo',0],['corazones','❤️','Lluvia de corazones',0],['aplausos','👏','Aplausos',0],['confeti','🎉','Confeti',0],['risa','😂','Risa',0],['extrano','🥺','¡Te extraño!',0],
+ ['fuegos','🎆','Fuegos artificiales',300],['serenata','🎶','Serenata',300],['rosa','🌹','Rosa que florece',500]];
+const GUIP={beso:['💋','😘','💕'],abrazo:['🤗','💛','✨'],corazones:['❤️','💖','💗','💓'],aplausos:['👏','🙌','⭐'],confeti:['🎉','🎊','✨','🟦','🟩'],risa:['😂','🤣','😆'],extrano:['🥺','💙','💌'],fuegos:['🎆','🎇','✨','💥'],serenata:['🎵','🎶','🎸','🎻'],rosa:['🌹','🌸','💮']};
+const EMO=[['feliz','😄','Feliz'],['amor','😍','Enamorado'],['risa','🤣','Muerto de risa'],['guino','😉','Guiño'],['triste','😢','Triste'],['bravo','😡','Bravo'],['sorpresa','😮','Sorpresa'],['fiesta','🥳','De fiesta'],['genial','😎','Genial'],['fuego','🔥','En llamas'],['ok','👍','De acuerdo'],['gracias','🙏','Gracias']];
+const GUIk=k=>GUI.find(g=>g[0]===k),EMOk=k=>EMO.find(e=>e[0]===k);
+(function(){const s=document.createElement('style');s.textContent=
+ '@keyframes zSacude{0%,100%{transform:translate(0,0)}10%{transform:translate(-9px,3px) rotate(-1deg)}20%{transform:translate(8px,-4px) rotate(1deg)}30%{transform:translate(-8px,-2px)}40%{transform:translate(9px,3px) rotate(1deg)}50%{transform:translate(-6px,4px)}60%{transform:translate(6px,-3px) rotate(-1deg)}70%{transform:translate(-5px,2px)}80%{transform:translate(4px,-2px)}90%{transform:translate(-2px,1px)}}'+
+ '.zSacude{animation:zSacude .75s linear 1}'+
+ '#capaFx{position:fixed;inset:0;z-index:9999;pointer-events:none;overflow:hidden}'+
+ '#capaFx .fxP{position:absolute;bottom:-60px;font-size:34px;animation:fxSube 3s ease-in forwards}'+
+ '@keyframes fxSube{0%{transform:translateY(0) scale(.6) rotate(0);opacity:0}15%{opacity:1}100%{transform:translateY(-115vh) scale(1.2) rotate(25deg);opacity:0}}'+
+ '#capaFx .fxB{position:absolute;font-size:38px;animation:fxEstalla 1.4s ease-out forwards}'+
+ '@keyframes fxEstalla{0%{transform:scale(.1);opacity:0}30%{opacity:1}100%{transform:scale(2.2);opacity:0}}'+
+ '#capaFx .fxG{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);font-size:120px;line-height:1;animation:fxLate 3s ease-in-out forwards;filter:drop-shadow(0 8px 24px rgba(11,79,138,.35))}'+
+ '@keyframes fxLate{0%{transform:translate(-50%,-50%) scale(0)}15%{transform:translate(-50%,-50%) scale(1.25)}25%{transform:translate(-50%,-50%) scale(1)}45%{transform:translate(-50%,-50%) scale(1.12)}60%{transform:translate(-50%,-50%) scale(1)}85%{opacity:1}100%{transform:translate(-50%,-50%) scale(1.4);opacity:0}}'+
+ '#capaFx .fxR{animation:fxFlor 3s ease-out forwards}@keyframes fxFlor{0%{transform:translate(-50%,-10%) scale(0) rotate(-40deg)}50%{transform:translate(-50%,-50%) scale(1.3) rotate(0)}85%{opacity:1}100%{transform:translate(-50%,-50%) scale(1.3);opacity:0}}'+
+ '#capaFx .fxT{position:absolute;left:50%;top:64%;transform:translateX(-50%);background:#fff;color:#0B4F8A;font:700 20px "Barlow Condensed",sans-serif;padding:8px 18px;border-radius:24px;box-shadow:0 6px 22px rgba(28,43,57,.18);max-width:86vw;width:max-content;text-align:center;line-height:1.15}'+
+ '.zMsj{display:flex;align-items:center;gap:8px;font-weight:700;color:#0B4F8A}.bb.mio .zMsj{color:inherit}.zMsj .zi{font-size:26px;display:inline-block;animation:zTimbre 1s ease-in-out 2}'+
+ '@keyframes zTimbre{0%,100%{transform:rotate(0)}20%{transform:rotate(-25deg)}40%{transform:rotate(22deg)}60%{transform:rotate(-15deg)}80%{transform:rotate(10deg)}}'+
+ '.gMsj{display:flex;align-items:center;gap:10px}.gMsj .gi{font-size:40px;line-height:1}.gMsj button{background:none;border:0;color:inherit;text-decoration:underline;cursor:pointer;padding:0;font:inherit;font-size:13px}'+
+ '.eMsj{font-size:56px;line-height:1;display:inline-block;padding:2px 4px}'+
+ '.eMsj.feliz,.eMsj.fiesta{animation:eSalta 1.2s ease-in-out infinite}.eMsj.amor,.eMsj.ok,.eMsj.gracias{animation:eLate 1.3s ease-in-out infinite}.eMsj.risa{animation:eRie .9s ease-in-out infinite}'+
+ '.eMsj.bravo{animation:eTiembla .5s linear infinite}.eMsj.triste{animation:eCae 2s ease-in-out infinite}.eMsj.guino,.eMsj.genial,.eMsj.sorpresa{animation:eGira 2.4s ease-in-out infinite}.eMsj.fuego{animation:eLlama .6s ease-in-out infinite alternate}'+
+ '@keyframes eSalta{0%,100%{transform:translateY(0)}40%{transform:translateY(-10px)}}@keyframes eLate{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}@keyframes eRie{0%,100%{transform:rotate(0)}25%{transform:rotate(-12deg)}75%{transform:rotate(12deg)}}'+
+ '@keyframes eTiembla{0%,100%{transform:translateX(0)}25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}@keyframes eCae{0%,100%{transform:translateY(0)}50%{transform:translateY(4px) scale(.96)}}@keyframes eGira{0%,70%,100%{transform:rotate(0)}80%{transform:rotate(-14deg) scale(1.1)}90%{transform:rotate(10deg)}}@keyframes eLlama{0%{transform:scale(1) translateY(0)}100%{transform:scale(1.12,1.2) translateY(-3px)}}'+
+ '.gGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px;margin:8px 0 4px}.gGrid button{background:#F4F8FB;border:1px solid #DCE5EE;border-radius:14px;padding:10px 4px;cursor:pointer;font:600 13px "Public Sans",sans-serif;color:#1C2B39;display:flex;flex-direction:column;align-items:center;gap:4px}'+
+ '.gGrid button span{font-size:34px;line-height:1}.gGrid button small{color:#0E8571;font-weight:700}.gGrid button:hover,.gGrid button:focus-visible{border-color:#14A38B;background:#E3F6F2}'+
+ '.bb:has(.zMsj) .macc button:first-child:not(:last-child),.bb:has(.gMsj) .macc button:first-child:not(:last-child),.bb:has(.eMsj) .macc button:first-child:not(:last-child){display:none}'+
+ '@media(prefers-reduced-motion:reduce){.zSacude{animation:none}#capaFx .fxP,#capaFx .fxB{display:none}#capaFx .fxG{animation:none;opacity:1}}';
+ document.head.appendChild(s)})();
+
+/* ---- Sonidos propios hechos en el navegador (sin archivos de Microsoft ni de nadie) ---- */
+let _actx=null;
+function sonido(tipo){try{_actx=_actx||new (window.AudioContext||window.webkitAudioContext)();const a=_actx;if(a.state==='suspended')a.resume();const t0=a.currentTime;
+ const nota=(f,ini,dur,forma,vol)=>{const o=a.createOscillator(),g=a.createGain();o.type=forma||'sine';o.frequency.value=f;g.gain.setValueAtTime(0,t0+ini);g.gain.linearRampToValueAtTime(vol||.18,t0+ini+.02);g.gain.exponentialRampToValueAtTime(.001,t0+ini+dur);o.connect(g);g.connect(a.destination);o.start(t0+ini);o.stop(t0+ini+dur+.05)};
+ if(tipo==='zumbido'){for(let k=0;k<6;k++)nota(k%2?150:120,k*.11,.12,'sawtooth',.12);nota(660,.7,.25,'triangle',.15)}
+ else if(tipo==='serenata')[523,659,784,659,880,784].forEach((f,k)=>nota(f,k*.32,.4,'triangle',.14));
+ else[784,988,1319].forEach((f,k)=>nota(f,k*.12,.35,'sine',.13))}catch(e){}}
+function vibrar(p){try{if(navigator.vibrate)navigator.vibrate(p)}catch(e){}}
+const deNoche=()=>{const h=new Date().getHours();return h>=22||h<7};
+function enSilencio(u){return !!(u&&pref(u).zNoche&&deNoche())}
+
+/* ---- Efectos en pantalla ---- */
+function efZumbido(quien){const el=document.querySelector('.chat')||document.body;el.classList.remove('zSacude');void el.offsetWidth;el.classList.add('zSacude');setTimeout(()=>el.classList.remove('zSacude'),900);
+ sonido('zumbido');vibrar([220,80,220,80,320]);if(quien)aviso('🔔 '+quien+' te envió un zumbido')}
+function efGuino(k,quien,mio){const g=GUIk(k);if(!g)return;let c=document.getElementById('capaFx');if(c)c.remove();c=document.createElement('div');c.id='capaFx';c.setAttribute('aria-hidden','true');
+ const pz=GUIP[k]||[g[1]];let h='';
+ if(k==='fuegos'){for(let n=0;n<14;n++)h+='<span class="fxB" style="left:'+(5+Math.random()*85)+'%;top:'+(8+Math.random()*60)+'%;animation-delay:'+(Math.random()*1.6).toFixed(2)+'s">'+pz[n%pz.length]+'</span>'}
+ else for(let n=0;n<22;n++)h+='<span class="fxP" style="left:'+(Math.random()*94)+'%;animation-delay:'+(Math.random()*1.2).toFixed(2)+'s;font-size:'+(24+Math.random()*26|0)+'px">'+pz[n%pz.length]+'</span>';
+ h+='<span class="fxG'+(k==='rosa'?' fxR':'')+'">'+g[1]+'</span><span class="fxT">'+esc(mio?'Enviaste: '+g[2]:(quien||'')+' te envió: '+g[2])+'</span>';
+ c.innerHTML=h;document.body.appendChild(c);setTimeout(()=>c.remove(),3400);sonido(k==='serenata'?'serenata':'guino');vibrar(80)}
+function aviso(t){if(typeof toast==='function')toast(t)}
+
+/* ---- Reglas: solo entre personas que se siguen mutuamente, nunca con bloqueos ---- */
+function otroDe(c){return c&&!c.grupo?(c.a===S.me?c.b:c.a):null}
+function puedeFx(c,que){const id=otroDe(c),o=id&&S.U[id],me=yo();
+ if(!o){toast('Los zumbidos y guiños son solo para conversaciones entre dos personas.');return null}
+ if(typeof esOcultoYo==='function'&&esOcultoYo()&&!(me.segs||[]).includes(id)){avisoOculto('enviar '+que+' a quien no sea tu seguidor aprobado');return null}
+ if(!(me.seg.includes(id)&&(o.seg||[]).includes(S.me))){toast('Solo puedes enviar '+que+' a personas que se siguen mutuamente contigo.');return null}
+ if((c.bloq||[]).length||bloqueo(S.me,id)){toast('Esta persona no recibe tus mensajes.');return null}
+ return o}
+function mandarEsp(m,txt,avisar){const n0=notif;notif=function(p,t,ir){if(ir==='mensajes'){if(!avisar)return;t=txt}return n0(p,t,ir)};try{return mandarMsj(m)}finally{notif=n0}}
+const _visto=new Set();
+function marcaFx(c,m){const k=c.id+'|'+m.de+'|'+m.f;_visto.add(k);return k}
+
+function zumbido(){const c=chatActual(),o=puedeFx(c,'zumbidos');if(!o)return;
+ if(pref(o).zumbidos===false)return toast(o.nombre+' tiene los zumbidos desactivados. Puedes escribirle un mensaje.');
+ const ult=(c.msgs||[]).filter(m=>m.zumb&&m.de===S.me).map(m=>Date.parse(m.f)||0).reduce((a,b)=>Math.max(a,b),0),falta=Math.ceil((30e3-(Date.now()-ult))/1000);
+ if(falta>0)return toast('Espera '+falta+' segundos para enviar otro zumbido. Así no se vuelve una molestia.');
+ const sil=enSilencio(o);
+ if(mandarEsp({zumb:true,t:'🔔 Zumbido'},'🔔 '+yo().nombre+' te envió un zumbido.',!sil)){marcaFx(c,c.msgs[c.msgs.length-1]);efZumbido();if(sil)toast('Le llegará en silencio: tiene horario de silencio de 10 p. m. a 7 a. m.')}}
+function opcGuinos(){const c=chatActual(),o=otroDe(c)&&S.U[otroDe(c)],j=jg(yo());
+ const gr=GUI.filter(g=>!g[3]),es=GUI.filter(g=>g[3]);
+ modal('<h2>Guiños y emoticones</h2><p class="suave peq">Los guiños aparecen en toda la pantalla de la otra persona durante unos segundos.</p>'+
+  (o?'<h3 style="margin:10px 0 0">Guiños gratis</h3><div class="gGrid">'+gr.map(g=>'<button onclick="guino(\''+g[0]+'\')"><span>'+g[1]+'</span>'+g[2]+'</button>').join('')+'</div>'+
+  '<h3 style="margin:12px 0 0">Guiños especiales</h3><p class="suave peq" style="margin:2px 0">Se pagan con SkyCoins del juego (tienes '+num(j.c)+').</p><div class="gGrid">'+es.map(g=>'<button onclick="guino(\''+g[0]+'\')"><span>'+g[1]+'</span>'+g[2]+'<small>'+num(g[3])+' SkyCoins</small></button>').join('')+'</div>':'')+
+  '<h3 style="margin:12px 0 0">Emoticones SKYNET animados</h3><div class="gGrid">'+EMO.map(e=>'<button aria-label="'+e[2]+'" onclick="emoticon(\''+e[0]+'\')"><span class="eMsj '+e[0]+'" style="font-size:34px;padding:0">'+e[1]+'</span>'+e[2]+'</button>').join('')+'</div>'+
+  '<button class="btn sec" style="margin-top:10px" onclick="cerrarModal()">Cerrar</button>')}
+function guino(k){const g=GUIk(k),c=chatActual(),o=puedeFx(c,'guiños');if(!g||!o)return;
+ if(pref(o).guinos===false)return toast(o.nombre+' tiene los guiños desactivados. Puedes escribirle un mensaje.');
+ const ult=(c.msgs||[]).filter(m=>m.guino&&m.de===S.me).map(m=>Date.parse(m.f)||0).reduce((a,b)=>Math.max(a,b),0);
+ if(Date.now()-ult<10e3)return toast('Espera unos segundos antes del siguiente guiño.');
+ const j=jg(yo());if(g[3]&&j.c<g[3])return toast('Te faltan '+num(g[3]-j.c)+' SkyCoins para este guiño. Gánalas en Ciudad SkyNet.');
+ const sil=enSilencio(o);cerrarModal();
+ if(mandarEsp({guino:k,t:g[1]+' '+g[2]},g[1]+' '+yo().nombre+' te envió un guiño: '+g[2]+'.',!sil)){
+  if(g[3]){gastar(j,g[3]);(j.hist=j.hist||[]).unshift({f:ahora(),t:'Guiño «'+g[2]+'» enviado',c:-g[3]});guardarS()}
+  marcaFx(c,c.msgs[c.msgs.length-1]);efGuino(k,null,true);if(sil)toast('Le llegará en silencio: tiene horario de silencio de 10 p. m. a 7 a. m.')}}
+function emoticon(k){const e=EMOk(k);if(!e)return;cerrarModal();mandarMsj({emo:k,t:e[1]})}
+function verGuino(k){efGuino(k,null,true)}
+
+/* ---- Botones en la barra del chat ---- */
+const _botonStickerR=botonSticker;
+botonSticker=function(){const c=chatActual(),uno=c&&!c.grupo;
+ return (uno?'<button class="ib" aria-label="Enviar un zumbido" title="Zumbido: sacude la pantalla de la otra persona" onclick="zumbido()">🔔</button>':'')+
+  '<button class="ib" aria-label="Guiños y emoticones" title="Guiños y emoticones animados" onclick="'+(uno?'opcGuinos()':'opcGuinos()')+'">💋</button>'+_botonStickerR()};
+
+/* ---- Cómo se ven en la conversación ---- */
+const _cuerpoMsj2R=cuerpoMsj2;
+cuerpoMsj2=function(m){if(m&&!m.borr){const mio=m.de===S.me,n=(S.U[m.de]||{}).nombre||'';
+  if(m.zumb)return '<div class="zMsj"><span class="zi" aria-hidden="true">🔔</span>'+(mio?'Enviaste un zumbido':esc(n)+' te envió un zumbido')+'</div>';
+  if(m.guino){const g=GUIk(m.guino)||['','💌','Guiño'];return '<div class="gMsj"><span class="gi" aria-hidden="true">'+g[1]+'</span><div><b>'+esc(g[2])+'</b><br><button onclick="event.stopPropagation();verGuino(\''+g[0]+'\')">▶ Ver de nuevo</button></div></div>'}
+  if(m.emo){const e=EMOk(m.emo)||['','🙂','Emoticón'];return '<span class="eMsj '+e[0]+'" role="img" aria-label="'+esc(e[2])+'">'+e[1]+'</span>'}}
+ return _cuerpoMsj2R(m)};
+if(typeof editarMsj==='function'){const _edR=editarMsj;editarMsj=function(i){const c=chatActual(),m=c&&c.msgs[i];if(m&&(m.zumb||m.guino||m.emo))return toast('Este mensaje no se edita. Puedes eliminarlo.');return _edR(i)}}
+
+/* ---- Al llegar un zumbido o un guiño nuevo de la otra persona ---- */
+function revisarFx(c){if(!c||!S.me||c.grupo||!Array.isArray(c.msgs))return;const me=yo();if(!me)return;
+ for(const m of c.msgs.slice(-6)){if(!m||m.de===S.me||m.borr||!(m.zumb||m.guino))continue;const k=c.id+'|'+m.de+'|'+m.f;if(_visto.has(k))continue;_visto.add(k);
+  if(Date.now()-(Date.parse(m.f)||0)>120e3||(c.bloq||[]).includes(S.me))continue;
+  const n=(S.U[m.de]||{}).nombre||'Alguien';if(enSilencio(me))continue;
+  if(m.zumb&&pref(me).zumbidos!==false){const abierto=S.chatSel===c.id;efZumbido(abierto?null:n);if(abierto)aviso('🔔 '+n+' te envió un zumbido')}
+  else if(m.guino&&pref(me).guinos!==false)efGuino(m.guino,n,false)}}
+if(typeof prodAplicar==='function'){const _paR=prodAplicar;
+ prodAplicar=function(c,i,d){const r=_paR.apply(this,arguments);
+  if(c==='M'&&d&&!(typeof _cargando!=='undefined'&&_cargando))setTimeout(()=>revisarFx((S.M||[]).find(x=>x&&String(x.id)===String(i))),50);
+  else if(c==='M'&&d)(d.msgs||[]).forEach(m=>m&&_visto.add(d.id+'|'+m.de+'|'+m.f));
+  return r}}
+
+/* ---- Configuración: Zumbidos y guiños ---- */
+const _vConfigR=vConfig;
+vConfig=function(){let h=_vConfigR();const u=yo();if(!u||u.tipo==='super')return h;
+ const blq='<div class="cfgtit">Zumbidos y guiños</div><ul class="cfg">'+opc('zumbidos','Recibir zumbidos','Tu pantalla tiembla, suena y el celular vibra cuando un amigo te envía un zumbido.')+opc('guinos','Recibir guiños animados','Besos, abrazos, corazones y más aparecen unos segundos en tu pantalla.')+opc('zNoche','Horario de silencio','De 10 p. m. a 7 a. m. los zumbidos y guiños llegan sin sonido, sin vibración y sin aviso.')+'</ul>';
+ const a=h.indexOf('<div class="cfgtit">Notificaciones</div>');if(a<0)return h+blq;const b=h.indexOf('<div class="cfgtit">',a+10);return b<0?h+blq:h.slice(0,b)+blq+h.slice(b)};
+if(typeof IDI!=='undefined'&&IDI.en)Object.assign(IDI.en,{"Zumbidos y guiños":"Nudges and winks","Recibir zumbidos":"Receive nudges","Recibir guiños animados":"Receive animated winks","Horario de silencio":"Quiet hours","Guiños y emoticones":"Winks and emoticons","Guiños gratis":"Free winks","Guiños especiales":"Special winks","Emoticones SKYNET animados":"SKYNET animated emoticons","Enviaste un zumbido":"You sent a nudge"});
+
 migrar25();migrar27();migrar28();migrar29();migrar32();if(PROD)prodIniciar();
 render();
 iniciarTraduccion();
