@@ -3364,13 +3364,17 @@ const GUI=[['beso','💋','Beso',0],['abrazo','🤗','Abrazo',0],['corazones','�
  ['fuegos','🎆','Fuegos artificiales',300],['serenata','🎶','Serenata',300],['rosa','🌹','Rosa que florece',500]];
 const GUIP={beso:['💋','😘','💕'],abrazo:['🤗','💛','✨'],corazones:['❤️','💖','💗','💓'],aplausos:['👏','🙌','⭐'],confeti:['🎉','🎊','✨','🟦','🟩'],risa:['😂','🤣','😆'],extrano:['🥺','💙','💌'],fuegos:['🎆','🎇','✨','💥'],serenata:['🎵','🎶','🎸','🎻'],rosa:['🌹','🌸','💮']};
 const EMO=[['feliz','😄','Feliz'],['amor','😍','Enamorado'],['risa','🤣','Muerto de risa'],['guino','😉','Guiño'],['triste','😢','Triste'],['bravo','😡','Bravo'],['sorpresa','😮','Sorpresa'],['fiesta','🥳','De fiesta'],['genial','😎','Genial'],['fuego','🔥','En llamas'],['ok','👍','De acuerdo'],['gracias','🙏','Gracias']];
-const GUIk=k=>GUI.find(g=>g[0]===k),EMOk=k=>EMO.find(e=>e[0]===k);
+function GUIk(k){return GUI.find(g=>g[0]===k)||(typeof PAQ_G!=='undefined'&&PAQ_G[k])||null}
+function EMOk(k){return EMO.find(e=>e[0]===k)||(typeof PAQ_E!=='undefined'&&PAQ_E[k])||null}
+const emoAnim=e=>e[4]?e[3]:e[0];
 (function(){const s=document.createElement('style');s.textContent=
  '@keyframes zSacude{0%,100%{transform:translate(0,0)}10%{transform:translate(-9px,3px) rotate(-1deg)}20%{transform:translate(8px,-4px) rotate(1deg)}30%{transform:translate(-8px,-2px)}40%{transform:translate(9px,3px) rotate(1deg)}50%{transform:translate(-6px,4px)}60%{transform:translate(6px,-3px) rotate(-1deg)}70%{transform:translate(-5px,2px)}80%{transform:translate(4px,-2px)}90%{transform:translate(-2px,1px)}}'+
  '.zSacude{animation:zSacude .75s linear 1}'+
  '#capaFx{position:fixed;inset:0;z-index:9999;pointer-events:none;overflow:hidden}'+
  '#capaFx .fxP{position:absolute;bottom:-60px;font-size:34px;animation:fxSube 3s ease-in forwards}'+
  '@keyframes fxSube{0%{transform:translateY(0) scale(.6) rotate(0);opacity:0}15%{opacity:1}100%{transform:translateY(-115vh) scale(1.2) rotate(25deg);opacity:0}}'+
+ '#capaFx .fxC{position:absolute;top:-60px;font-size:30px;animation:fxCae 3s ease-in forwards}@keyframes fxCae{0%{transform:translateY(0) rotate(0);opacity:0}10%{opacity:1}100%{transform:translateY(115vh) rotate(-30deg);opacity:.2}}'+
+ '#capaFx .fxF{position:absolute;left:50%;top:18%;transform:translateX(-50%);font:800 clamp(28px,7vw,54px)/1.05 "Barlow Condensed",sans-serif;color:#0B4F8A;text-align:center;width:90vw;text-shadow:0 2px 0 #fff,0 0 18px #fff;animation:fxLate 3s ease-in-out forwards}'+
  '#capaFx .fxB{position:absolute;font-size:38px;animation:fxEstalla 1.4s ease-out forwards}'+
  '@keyframes fxEstalla{0%{transform:scale(.1);opacity:0}30%{opacity:1}100%{transform:scale(2.2);opacity:0}}'+
  '#capaFx .fxG{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);font-size:120px;line-height:1;animation:fxLate 3s ease-in-out forwards;filter:drop-shadow(0 8px 24px rgba(11,79,138,.35))}'+
@@ -3380,6 +3384,7 @@ const GUIk=k=>GUI.find(g=>g[0]===k),EMOk=k=>EMO.find(e=>e[0]===k);
  '.zMsj{display:flex;align-items:center;gap:8px;font-weight:700;color:#0B4F8A}.bb.mio .zMsj{color:inherit}.zMsj .zi{font-size:26px;display:inline-block;animation:zTimbre 1s ease-in-out 2}'+
  '@keyframes zTimbre{0%,100%{transform:rotate(0)}20%{transform:rotate(-25deg)}40%{transform:rotate(22deg)}60%{transform:rotate(-15deg)}80%{transform:rotate(10deg)}}'+
  '.gMsj{display:flex;align-items:center;gap:10px}.gMsj .gi{font-size:40px;line-height:1}.gMsj button{background:none;border:0;color:inherit;text-decoration:underline;cursor:pointer;padding:0;font:inherit;font-size:13px}'+
+ '.pqT{display:flex;align-items:center;gap:10px;border:1px solid #DCE5EE;border-radius:14px;padding:10px;margin:8px 0;background:#fff}.pqI{font-size:38px;line-height:1}.pqN{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0}.pqB{display:flex;flex-direction:column;gap:6px;align-items:stretch}.pqB .btn{padding:6px 10px;font-size:14px;white-space:nowrap}.pqP{color:#0E8571;font-weight:700;font-size:13px}.pqY{color:#0E8571;font-weight:700;font-size:14px;align-self:center}'+
  '.eMsj{font-size:56px;line-height:1;display:inline-block;padding:2px 4px}'+
  '.eMsj.feliz,.eMsj.fiesta{animation:eSalta 1.2s ease-in-out infinite}.eMsj.amor,.eMsj.ok,.eMsj.gracias{animation:eLate 1.3s ease-in-out infinite}.eMsj.risa{animation:eRie .9s ease-in-out infinite}'+
  '.eMsj.bravo{animation:eTiembla .5s linear infinite}.eMsj.triste{animation:eCae 2s ease-in-out infinite}.eMsj.guino,.eMsj.genial,.eMsj.sorpresa{animation:eGira 2.4s ease-in-out infinite}.eMsj.fuego{animation:eLlama .6s ease-in-out infinite alternate}'+
@@ -3388,7 +3393,7 @@ const GUIk=k=>GUI.find(g=>g[0]===k),EMOk=k=>EMO.find(e=>e[0]===k);
  '.gGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px;margin:8px 0 4px}.gGrid button{background:#F4F8FB;border:1px solid #DCE5EE;border-radius:14px;padding:10px 4px;cursor:pointer;font:600 13px "Public Sans",sans-serif;color:#1C2B39;display:flex;flex-direction:column;align-items:center;gap:4px}'+
  '.gGrid button span{font-size:34px;line-height:1}.gGrid button small{color:#0E8571;font-weight:700}.gGrid button:hover,.gGrid button:focus-visible{border-color:#14A38B;background:#E3F6F2}'+
  '.bb:has(.zMsj) .macc button:first-child:not(:last-child),.bb:has(.gMsj) .macc button:first-child:not(:last-child),.bb:has(.eMsj) .macc button:first-child:not(:last-child){display:none}'+
- '@media(prefers-reduced-motion:reduce){.zSacude{animation:none}#capaFx .fxP,#capaFx .fxB{display:none}#capaFx .fxG{animation:none;opacity:1}}';
+ '@media(prefers-reduced-motion:reduce){.zSacude{animation:none}#capaFx .fxP,#capaFx .fxB,#capaFx .fxC{display:none}#capaFx .fxF{animation:none}#capaFx .fxG{animation:none;opacity:1}}';
  document.head.appendChild(s)})();
 
 /* ---- Sonidos propios hechos en el navegador (sin archivos de Microsoft ni de nadie) ---- */
@@ -3406,10 +3411,11 @@ function enSilencio(u){return !!(u&&pref(u).zNoche&&deNoche())}
 function efZumbido(quien){const el=document.querySelector('.chat')||document.body;el.classList.remove('zSacude');void el.offsetWidth;el.classList.add('zSacude');setTimeout(()=>el.classList.remove('zSacude'),900);
  sonido('zumbido');vibrar([220,80,220,80,320]);if(quien)aviso('🔔 '+quien+' te envió un zumbido')}
 function efGuino(k,quien,mio){const g=GUIk(k);if(!g)return;let c=document.getElementById('capaFx');if(c)c.remove();c=document.createElement('div');c.id='capaFx';c.setAttribute('aria-hidden','true');
- const pz=GUIP[k]||[g[1]];let h='';
- if(k==='fuegos'){for(let n=0;n<14;n++)h+='<span class="fxB" style="left:'+(5+Math.random()*85)+'%;top:'+(8+Math.random()*60)+'%;animation-delay:'+(Math.random()*1.6).toFixed(2)+'s">'+pz[n%pz.length]+'</span>'}
+ const pz=Array.isArray(g[4])?g[4]:(GUIP[k]||[g[1]]),modo=g[5]||(k==='fuegos'?'estalla':'sube');let h='';
+ if(modo==='estalla'){for(let n=0;n<14;n++)h+='<span class="fxB" style="left:'+(5+Math.random()*85)+'%;top:'+(8+Math.random()*60)+'%;animation-delay:'+(Math.random()*1.6).toFixed(2)+'s">'+pz[n%pz.length]+'</span>'}
+ else if(modo==='cae'){for(let n=0;n<26;n++)h+='<span class="fxC" style="left:'+(Math.random()*96)+'%;animation-delay:'+(Math.random()*1.4).toFixed(2)+'s;font-size:'+(22+Math.random()*24|0)+'px">'+pz[n%pz.length]+'</span>'}
  else for(let n=0;n<22;n++)h+='<span class="fxP" style="left:'+(Math.random()*94)+'%;animation-delay:'+(Math.random()*1.2).toFixed(2)+'s;font-size:'+(24+Math.random()*26|0)+'px">'+pz[n%pz.length]+'</span>';
- h+='<span class="fxG'+(k==='rosa'?' fxR':'')+'">'+g[1]+'</span><span class="fxT">'+esc(mio?'Enviaste: '+g[2]:(quien||'')+' te envió: '+g[2])+'</span>';
+ h+='<span class="fxG'+(k==='rosa'?' fxR':'')+'">'+g[1]+'</span>'+(g[6]?'<span class="fxF">'+esc(g[6])+'</span>':'')+'<span class="fxT">'+esc(mio?'Enviaste: '+g[2]:(quien||'')+' te envió: '+g[2])+'</span>';
  c.innerHTML=h;document.body.appendChild(c);setTimeout(()=>c.remove(),3400);sonido(k==='serenata'?'serenata':'guino');vibrar(80)}
 function aviso(t){if(typeof toast==='function')toast(t)}
 
@@ -3431,23 +3437,52 @@ function zumbido(){const c=chatActual(),o=puedeFx(c,'zumbidos');if(!o)return;
  if(falta>0)return toast('Espera '+falta+' segundos para enviar otro zumbido. Así no se vuelve una molestia.');
  const sil=enSilencio(o);
  if(mandarEsp({zumb:true,t:'🔔 Zumbido'},'🔔 '+yo().nombre+' te envió un zumbido.',!sil)){marcaFx(c,c.msgs[c.msgs.length-1]);efZumbido();if(sil)toast('Le llegará en silencio: tiene horario de silencio de 10 p. m. a 7 a. m.')}}
-function opcGuinos(){const c=chatActual(),o=otroDe(c)&&S.U[otroDe(c)],j=jg(yo());
- const gr=GUI.filter(g=>!g[3]),es=GUI.filter(g=>g[3]);
+function opcGuinos(){const c=chatActual(),o=otroDe(c)&&S.U[otroDe(c)],j=jg(yo()),mis=misPaqs().map(paqDe).filter(Boolean);
+ const gr=GUI.filter(g=>!g[3]),es=GUI.filter(g=>g[3]),bt=g=>'<button onclick="guino(\''+g[0]+'\')"><span>'+g[1]+'</span>'+esc(g[2])+(g[3]?'<small>'+num(g[3])+' SkyCoins</small>':'')+'</button>',
+  be=e=>'<button aria-label="'+esc(e[2])+'" onclick="emoticon(\''+e[0]+'\')"><span class="eMsj '+emoAnim(e)+'" style="font-size:34px;padding:0">'+e[1]+'</span>'+esc(e[2])+'</button>';
+ const pr=PAQ.filter(p=>!tienePaq(p.id)&&paqPronto(p)!==null)[0];
  modal('<h2>Guiños y emoticones</h2><p class="suave peq">Los guiños aparecen en toda la pantalla de la otra persona durante unos segundos.</p>'+
-  (o?'<h3 style="margin:10px 0 0">Guiños gratis</h3><div class="gGrid">'+gr.map(g=>'<button onclick="guino(\''+g[0]+'\')"><span>'+g[1]+'</span>'+g[2]+'</button>').join('')+'</div>'+
-  '<h3 style="margin:12px 0 0">Guiños especiales</h3><p class="suave peq" style="margin:2px 0">Se pagan con SkyCoins del juego (tienes '+num(j.c)+').</p><div class="gGrid">'+es.map(g=>'<button onclick="guino(\''+g[0]+'\')"><span>'+g[1]+'</span>'+g[2]+'<small>'+num(g[3])+' SkyCoins</small></button>').join('')+'</div>':'')+
-  '<h3 style="margin:12px 0 0">Emoticones SKYNET animados</h3><div class="gGrid">'+EMO.map(e=>'<button aria-label="'+e[2]+'" onclick="emoticon(\''+e[0]+'\')"><span class="eMsj '+e[0]+'" style="font-size:34px;padding:0">'+e[1]+'</span>'+e[2]+'</button>').join('')+'</div>'+
+  '<button class="btn" style="margin:6px 0" onclick="abrirTienda()">🛍️ Tienda de paquetes ('+PAQ.length+' temas)</button>'+
+  (pr?'<div class="aviso az peq" style="cursor:pointer" onclick="verPaq(\''+pr.id+'\')">'+pr.i+' Se acerca <b>'+esc(pr.n)+'</b>: mira su paquete en la tienda.</div>':'')+
+  (o?'<h3 style="margin:10px 0 0">Guiños gratis</h3><div class="gGrid">'+gr.map(bt).join('')+'</div>'+
+  '<h3 style="margin:12px 0 0">Guiños especiales</h3><p class="suave peq" style="margin:2px 0">Se pagan con SkyCoins del juego (tienes '+num(j.c)+').</p><div class="gGrid">'+es.map(bt).join('')+'</div>'+
+  mis.map(p=>'<h3 style="margin:12px 0 0">'+p.i+' '+esc(p.n)+'</h3><div class="gGrid">'+p.gs.map(bt).join('')+'</div>').join(''):'')+
+  '<h3 style="margin:12px 0 0">Emoticones SKYNET animados</h3><div class="gGrid">'+EMO.map(be).join('')+mis.map(p=>p.es.map(be).join('')).join('')+'</div>'+
   '<button class="btn sec" style="margin-top:10px" onclick="cerrarModal()">Cerrar</button>')}
+/* ---- Tienda de paquetes ---- */
+function abrirTienda(){const j=jg(yo()),ord=PAQ.slice().sort((a,b)=>{const x=paqPronto(a),y=paqPronto(b);return (x===null?99:x)-(y===null?99:y)});
+ const tarjeta=p=>{const t=tienePaq(p.id),d=paqPronto(p);return '<div class="pqT"><div class="pqI">'+p.i+'</div><div class="pqN"><b>'+esc(p.n)+'</b><span class="suave peq">'+p.gs.slice(0,4).map(g=>g[1]).join(' ')+' · 8 guiños y 8 emoticones</span>'+(d!==null?'<span class="pqP">'+(d<=0?'¡Es hoy!':'Faltan '+d+' días')+'</span>':'')+'</div><div class="pqB"><button class="btn sec" onclick="verPaq(\''+p.id+'\')">Ver</button>'+(t?'<span class="pqY">✓ Es tuyo</span>':'<button class="btn" onclick="comprarPaq(\''+p.id+'\')">'+paqPrecio(p)+'</button>')+'</div></div>'};
+ modal('<h2>🛍️ Tienda de paquetes</h2><p class="suave peq">Cada paquete trae 8 guiños animados y 8 emoticones de un tema. Lo compras una vez y es tuyo para siempre.</p>'+
+  '<h3 style="margin:10px 0 2px">Con SkyCoins</h3><p class="suave peq" style="margin:0">Tienes '+num(j.c)+' SkyCoins.</p>'+ord.filter(p=>p.pago==='coins').map(tarjeta).join('')+
+  '<h3 style="margin:14px 0 2px">Paquetes especiales</h3><p class="suave peq" style="margin:0">'+pesos(PAQ_PESOS)+' cada uno.</p>'+ord.filter(p=>p.pago!=='coins').map(tarjeta).join('')+
+  '<button class="btn sec" style="margin-top:10px" onclick="'+(chatActual()?'opcGuinos()':'cerrarModal()')+'">Volver</button>')}
+function verPaq(id){const p=paqDe(id);if(!p)return;const t=tienePaq(id);
+ modal('<h2>'+p.i+' '+esc(p.n)+'</h2><p class="suave peq">Toca un guiño para verlo en pantalla.</p><div class="gGrid">'+p.gs.map(g=>'<button onclick="efGuino(\''+g[0]+'\',null,true)"><span>'+g[1]+'</span>'+esc(g[2])+'</button>').join('')+'</div>'+
+  '<h3 style="margin:10px 0 0">Emoticones</h3><div class="gGrid">'+p.es.map(e=>'<button disabled aria-label="'+esc(e[2])+'"><span class="eMsj '+emoAnim(e)+'" style="font-size:34px;padding:0">'+e[1]+'</span>'+esc(e[2])+'</button>').join('')+'</div>'+
+  '<div class="fila" style="margin-top:10px;flex-wrap:wrap">'+(t?'<span class="pqY">✓ Este paquete ya es tuyo</span>':'<button class="btn" onclick="comprarPaq(\''+id+'\')">Comprar por '+paqPrecio(p)+'</button>')+'<button class="btn sec" onclick="abrirTienda()">Volver a la tienda</button></div>')}
+function comprarPaq(id){const p=paqDe(id),u=yo();if(!p||!u)return;if(tienePaq(id))return toast('Este paquete ya es tuyo.');
+ if(p.pago==='coins'){const j=jg(u);if(j.c<PAQ_COINS)return toast('Te faltan '+num(PAQ_COINS-j.c)+' SkyCoins. Gánalas en Ciudad SkyNet.');
+  gastar(j,PAQ_COINS);(j.hist=j.hist||[]).unshift({f:ahora(),t:'Paquete de guiños «'+p.n+'»',c:-PAQ_COINS});u.paqC=[...(u.paqC||[]),id];guardarS();
+  toast('¡Listo! El paquete «'+p.n+'» ya es tuyo.');return verPaq(id)}
+ if(typeof PROD!=='undefined'&&!PROD){u.paqs=[...(u.paqs||[]),id];guardarS();toast('Demostración: paquete activado.');return verPaq(id)}
+ if(typeof PLAY!=='undefined'&&PLAY&&!(typeof PLAY_DGS!=='undefined'&&PLAY_DGS))return toast('Esta compra todavía no está disponible en esta versión de la app.');
+ window._pagoPend={tipo:'paq',k:id,valor:PAQ_PESOS,desc:'Paquete de guiños «'+p.n+'»',acc:''};
+ const play=typeof PLAY!=='undefined'&&PLAY;
+ modal0('<h2>'+p.i+' '+esc(p.n)+'</h2><p>Paquete de 8 guiños animados y 8 emoticones, tuyo para siempre.</p><p style="font-size:20px;margin:6px 0"><b>Total: '+pesos(PAQ_PESOS)+'</b></p>'+
+  '<div class="aviso az peq">🛡 '+(play?'Pagas con Google Play, con la forma de pago de tu cuenta de Google.':'Pagas en la página segura de Bold (tarjeta, PSE, Nequi, Daviplata).')+' SKYNET nunca ve los datos de tu tarjeta.</div>'+
+  '<div class="fila" style="margin-top:10px;flex-wrap:wrap"><button class="btn" onclick="'+(play?'playPagar()':'prodPagar()')+'">Pagar con '+(play?'Google Play':'Bold')+'</button><button class="btn sec" onclick="verPaq(\''+id+'\')">Volver</button></div>')}
+if(typeof prodEntregar==='function'){const _peR=prodEntregar;prodEntregar=async function(r){if(r&&r.tipo==='paq'){await prodSync();prodBorrarPend(r.id);await prodApi('/api/bold/entregado',{id:r.id}).catch(()=>{});const p=paqDe(r.k);cerrarModal();render();toast('¡Pago aprobado! El paquete «'+(p?p.n:'')+'» ya es tuyo.');if(p)verPaq(p.id);return}return _peR.apply(this,arguments)}}
 function guino(k){const g=GUIk(k),c=chatActual(),o=puedeFx(c,'guiños');if(!g||!o)return;
  if(pref(o).guinos===false)return toast(o.nombre+' tiene los guiños desactivados. Puedes escribirle un mensaje.');
  const ult=(c.msgs||[]).filter(m=>m.guino&&m.de===S.me).map(m=>Date.parse(m.f)||0).reduce((a,b)=>Math.max(a,b),0);
  if(Date.now()-ult<10e3)return toast('Espera unos segundos antes del siguiente guiño.');
+ if(g[7]&&!tienePaq(g[7])){cerrarModal();toast('Este guiño es del paquete «'+(paqDe(g[7])||{}).n+'». Míralo en la tienda.');return verPaq(g[7])}
  const j=jg(yo());if(g[3]&&j.c<g[3])return toast('Te faltan '+num(g[3]-j.c)+' SkyCoins para este guiño. Gánalas en Ciudad SkyNet.');
  const sil=enSilencio(o);cerrarModal();
  if(mandarEsp({guino:k,t:g[1]+' '+g[2]},g[1]+' '+yo().nombre+' te envió un guiño: '+g[2]+'.',!sil)){
   if(g[3]){gastar(j,g[3]);(j.hist=j.hist||[]).unshift({f:ahora(),t:'Guiño «'+g[2]+'» enviado',c:-g[3]});guardarS()}
   marcaFx(c,c.msgs[c.msgs.length-1]);efGuino(k,null,true);if(sil)toast('Le llegará en silencio: tiene horario de silencio de 10 p. m. a 7 a. m.')}}
-function emoticon(k){const e=EMOk(k);if(!e)return;cerrarModal();mandarMsj({emo:k,t:e[1]})}
+function emoticon(k){const e=EMOk(k);if(!e)return;if(e[4]&&!tienePaq(e[4]))return verPaq(e[4]);cerrarModal();mandarMsj({emo:k,t:e[1]})}
 function verGuino(k){efGuino(k,null,true)}
 
 /* ---- Botones en la barra del chat ---- */
@@ -3461,7 +3496,7 @@ const _cuerpoMsj2R=cuerpoMsj2;
 cuerpoMsj2=function(m){if(m&&!m.borr){const mio=m.de===S.me,n=(S.U[m.de]||{}).nombre||'';
   if(m.zumb)return '<div class="zMsj"><span class="zi" aria-hidden="true">🔔</span>'+(mio?'Enviaste un zumbido':esc(n)+' te envió un zumbido')+'</div>';
   if(m.guino){const g=GUIk(m.guino)||['','💌','Guiño'];return '<div class="gMsj"><span class="gi" aria-hidden="true">'+g[1]+'</span><div><b>'+esc(g[2])+'</b><br><button onclick="event.stopPropagation();verGuino(\''+g[0]+'\')">▶ Ver de nuevo</button></div></div>'}
-  if(m.emo){const e=EMOk(m.emo)||['','🙂','Emoticón'];return '<span class="eMsj '+e[0]+'" role="img" aria-label="'+esc(e[2])+'">'+e[1]+'</span>'}}
+  if(m.emo){const e=EMOk(m.emo)||['','🙂','Emoticón'];return '<span class="eMsj '+emoAnim(e)+'" role="img" aria-label="'+esc(e[2])+'">'+e[1]+'</span>'}}
  return _cuerpoMsj2R(m)};
 if(typeof editarMsj==='function'){const _edR=editarMsj;editarMsj=function(i){const c=chatActual(),m=c&&c.msgs[i];if(m&&(m.zumb||m.guino||m.emo))return toast('Este mensaje no se edita. Puedes eliminarlo.');return _edR(i)}}
 
@@ -3484,6 +3519,83 @@ vConfig=function(){let h=_vConfigR();const u=yo();if(!u||u.tipo==='super')return
  const blq='<div class="cfgtit">Zumbidos y guiños</div><ul class="cfg">'+opc('zumbidos','Recibir zumbidos','Tu pantalla tiembla, suena y el celular vibra cuando un amigo te envía un zumbido.')+opc('guinos','Recibir guiños animados','Besos, abrazos, corazones y más aparecen unos segundos en tu pantalla.')+opc('zNoche','Horario de silencio','De 10 p. m. a 7 a. m. los zumbidos y guiños llegan sin sonido, sin vibración y sin aviso.')+'</ul>';
  const a=h.indexOf('<div class="cfgtit">Notificaciones</div>');if(a<0)return h+blq;const b=h.indexOf('<div class="cfgtit">',a+10);return b<0?h+blq:h.slice(0,b)+blq+h.slice(b)};
 if(typeof IDI!=='undefined'&&IDI.en)Object.assign(IDI.en,{"Zumbidos y guiños":"Nudges and winks","Recibir zumbidos":"Receive nudges","Recibir guiños animados":"Receive animated winks","Horario de silencio":"Quiet hours","Guiños y emoticones":"Winks and emoticons","Guiños gratis":"Free winks","Guiños especiales":"Special winks","Emoticones SKYNET animados":"SKYNET animated emoticons","Enviaste un zumbido":"You sent a nudge"});
+
+/* ================= v49 · Paquetes de guiños y emoticones por tema (decisión del dueño, 26 nov 2026) =================
+   Los 5 paquetes más sencillos se pagan con SkyCoins (2.000 c/u). Los demás con dinero real: $2.900 c/u (Bold en la web, Google Play en la app).
+   Guiño: 'id|emoji|Nombre|partículas separadas por espacio|modo (sube, cae, estalla)|frase grande opcional'
+   Emoticón: 'emoji|Nombre|animación (feliz, amor, risa, guino, triste, bravo, sorpresa, fiesta, genial, fuego, ok, gracias)'
+   Fechas: 'MM-DD' fijas o 'pascua±N' (Semana Santa, Carnaval). La tienda destaca el paquete 21 días antes. */
+const PAQ_COINS=2000,PAQ_PESOS=2900;
+const PAQ=[
+ // ---- Con SkyCoins (los más sencillos) ----
+ {id:'cumple',n:'Cumpleaños',i:'🎂',pago:'coins',g:['cumtorta|🎂|Torta con velas|🎂 🕯️ ✨|sube|¡Feliz cumpleaños!','cumglobo|🎈|Globos|🎈 🎈 🎈 🎉|sube|','cumregalo|🎁|Regalo sorpresa|🎁 🎀 ✨|estalla|¡Sorpresa!','cumvelas|🕯️|Pide un deseo|✨ 🌟 💫|cae|Pide un deseo','cumbrindis|🥂|Brindis|🥂 🍾 ✨|estalla|¡Salud!','cumpinata|🪅|Piñata|🍬 🍭 🎊 🪅|cae|','cumcorona|👑|Rey o reina del día|👑 ✨ 💎|cae|¡Hoy es tu día!','cumserenata|🎵|Cumpleaños feliz|🎵 🎶 🎂|sube|'],
+  e:['🥳|De fiesta|fiesta','🎂|Torta|feliz','🎈|Globo|feliz','🎁|Regalo|amor','🍰|Pastel|feliz','🥂|Salud|ok','👑|Corona|genial','🎊|Confeti|fiesta']},
+ {id:'amor',n:'Amor',i:'💘',pago:'coins',g:['amcorazon|💓|Corazón que late|💓 💗 💖|sube|','amvolado|😘|Beso volado|😘 💋 💕|sube|','amcarta|💌|Carta de amor|💌 💕 ✨|cae|Te quiero','amflecha|💘|Flechazo|💘 💕 💖|estalla|','amrosas|🌹|Lluvia de rosas|🌹 🥀 🌸|cae|','amanillo|💍|Para siempre|💍 💎 ✨|estalla|','amabrazo|🫂|Abrazo de oso|🫂 💛 🤗|sube|','amluna|🌙|Te pienso|🌙 ⭐ 💫|cae|Estoy pensando en ti'],
+  e:['😍|Enamorado|amor','🥰|Con cariño|amor','😘|Beso|amor','💕|Corazones|amor','💖|Brillo|amor','🫶|Mis manos|ok','🌹|Rosa|amor','💌|Carta|amor']},
+ {id:'familia',n:'Familia',i:'👨‍👩‍👧',pago:'coins',g:['famabrazo|🤗|Abrazo familiar|🤗 💛 🏡|sube|','famcasa|🏡|Hogar dulce hogar|🏡 💛 ✨|cae|','famcomida|🍲|A la mesa|🍲 🫓 🥘|sube|¡A comer en familia!','famabuelos|👴|Para los abuelos|👵 👴 💛|sube|','famhermanos|👫|Hermanos|👫 💙 🤝|estalla|','fambebe|👶|Bebé en camino|👶 🍼 💖|cae|','famfoto|📸|Foto familiar|📸 ✨ 😁|estalla|','famdomingo|☀️|Domingo en familia|☀️ 🌳 💛|sube|'],
+  e:['👨‍👩‍👧|Familia|amor','🏡|Hogar|feliz','👵|Abuela|amor','👴|Abuelo|amor','👶|Bebé|feliz','🤗|Abrazo|amor','🍲|Comida|feliz','❤️|Te quiero|amor']},
+ {id:'animo',n:'Ánimo y salud',i:'💪',pago:'coins',g:['anpuedes|💪|Tú puedes|💪 ⭐ 🔥|estalla|¡Tú puedes!','anmejorate|🩹|Mejórate pronto|🩹 💐 💛|cae|Mejórate pronto','anfuerza|🫂|Abrazo de fuerza|🫂 💪 💛|sube|','ansol|🌞|Ánimo|🌞 🌻 ✨|sube|Todo va a estar bien','ancafe|☕|Un cafecito|☕ 🥐 💛|sube|','antrofeo|🏆|Lo lograste|🏆 🎉 ⭐|estalla|¡Lo lograste!','anarcoiris|🌈|Arcoíris|🌈 ☀️ ✨|cae|','anflores|💐|Flores para ti|💐 🌸 🌼|cae|'],
+  e:['💪|Fuerza|ok','🙌|Bien hecho|fiesta','🌞|Sol|feliz','🩹|Curita|triste','🌈|Arcoíris|feliz','☕|Café|ok','🏆|Trofeo|genial','✨|Brillo|feliz']},
+ {id:'trabajo',n:'Trabajo',i:'💼',pago:'coins',g:['trbuendia|☀️|Buenos días|☀️ ☕ 🌤️|sube|¡Buenos días!','trlogro|🚀|Lo logramos|🚀 🎉 ⭐|estalla|¡Lo logramos!','trviernes|🎉|Feliz viernes|🎉 🍻 🕺|cae|¡Feliz viernes!','trequipo|🤝|Trabajo en equipo|🤝 💼 ⭐|estalla|','trmeta|🎯|Meta cumplida|🎯 📈 ✨|estalla|','trcafe|☕|Pausa activa|☕ 🧘 💤|sube|','trideas|💡|Gran idea|💡 ✨ 🧠|estalla|','trgracias|🙏|Gracias, equipo|🙏 💛 🤝|sube|'],
+  e:['💼|Trabajo|ok','📈|Va subiendo|genial','🎯|En el blanco|genial','💡|Idea|sorpresa','🤝|Trato hecho|ok','☕|Café|ok','😮‍💨|Uf|triste','🚀|A toda|fuego']},
+ // ---- Con dinero real ($2.900 c/u) ----
+ {id:'madre',n:'Día de la Madre',i:'💐',pago:'pesos',f:['05-10'],g:['mafeliz|💐|Feliz día, mamá|💐 🌸 💖|cae|¡Feliz día, mamá!','mateamo|💖|Te quiero, mamá|💖 💕 🌷|sube|Te quiero, mamá','marosas|🌹|Rosas para mamá|🌹 🌹 🌸|cae|','maabrazo|🤗|Abrazo de mamá|🤗 💛 💐|sube|','macorona|👑|Reina de la casa|👑 💎 ✨|cae|La reina de la casa','macarta|💌|Carta para mamá|💌 🌸 ✨|sube|','maflores|🌷|Jardín de flores|🌷 🌼 🌻 🌸|sube|','magracias|🙏|Gracias, mamá|🙏 💖 ✨|estalla|Gracias por todo'],
+  e:['💐|Ramo|amor','👩‍👧|Mamá e hija|amor','👩‍👦|Mamá e hijo|amor','🌷|Tulipán|feliz','💖|Corazón|amor','👑|Reina|genial','🤱|Mamá|amor','🌸|Flor|feliz']},
+ {id:'padre',n:'Día del Padre',i:'👔',pago:'pesos',f:['06-21'],g:['pafeliz|👔|Feliz día, papá|👔 💙 ⭐|cae|¡Feliz día, papá!','paheroe|🦸|Mi héroe|🦸 ⭐ 💪|estalla|Mi héroe','pateamo|💙|Te quiero, papá|💙 💪 ✨|sube|Te quiero, papá','paasado|🍖|Asado con papá|🍖 🔥 🥩|sube|','paherramienta|🧰|El que todo lo arregla|🔧 🔨 🧰|estalla|','pacafe|☕|Tinto con papá|☕ 🗞️ 💙|sube|','patrofeo|🏆|El mejor papá|🏆 🥇 ⭐|estalla|El mejor papá','paabrazo|🤗|Abrazo de papá|🤗 💙 💛|sube|'],
+  e:['👨‍👧|Papá e hija|amor','👨‍👦|Papá e hijo|amor','👔|Corbata|genial','🦸|Héroe|genial','💙|Corazón azul|amor','🍖|Asado|feliz','🏆|El mejor|genial','💪|Fuerte|ok']},
+ {id:'mujer',n:'Día de la Mujer',i:'🌹',pago:'pesos',f:['03-08'],g:['mufeliz|🌹|Feliz día, mujer|🌹 💜 ✨|cae|¡Feliz Día de la Mujer!','mufuerza|💜|Mujer valiente|💜 💪 ⭐|estalla|','muflores|💐|Flores para ti|💐 🌷 🌸|cae|','muestrella|🌟|Brillas|🌟 ✨ 💫|sube|Brillas con luz propia','mureina|👑|Reina|👑 💎 💜|cae|','mumariposa|🦋|Libre como mariposa|🦋 🌸 ✨|sube|','mugracias|🙏|Gracias por ser tú|🙏 💜 🌹|sube|','muabrazo|🤗|Abrazo|🤗 💜 💛|sube|'],
+  e:['🌹|Rosa|amor','💜|Morado|amor','👩|Mujer|feliz','💐|Ramo|amor','🦋|Mariposa|feliz','👑|Reina|genial','🌟|Estrella|genial','💪|Valiente|ok']},
+ {id:'hombre',n:'Día del Hombre',i:'🧔',pago:'pesos',f:['11-19'],g:['hofeliz|🧔|Feliz Día del Hombre|🧔 💙 ⭐|cae|¡Feliz Día del Hombre!','hocaballero|🎩|Todo un caballero|🎩 ✨ 💙|cae|','hoparrilla|🍖|Parrillada|🍖 🔥 🍻|sube|','hofuerte|💪|Hombre fuerte|💪 🔥 ⭐|estalla|','hofutbol|⚽|Partido con los amigos|⚽ 🥅 🎉|estalla|','hoheroe|🦸|Héroe de todos los días|🦸 ⭐ 💙|estalla|','hoabrazo|🤝|Abrazo de hermanos|🤝 💙 💛|sube|','hogracias|🙏|Gracias, amigo|🙏 💙 ✨|sube|'],
+  e:['🧔|Barba|genial','🎩|Sombrero|genial','💙|Corazón azul|amor','🍻|Salud|ok','💪|Fuerte|ok','😎|Genial|genial','🤝|Amigos|ok','🔥|Fuego|fuego']},
+ {id:'nino',n:'Día del Niño',i:'🧒',pago:'pesos',f:['04-25'],g:['nifeliz|🧒|Feliz Día del Niño|🧒 🎈 🎉|cae|¡Feliz Día del Niño!','nijuguete|🧸|Osito de peluche|🧸 💛 ✨|sube|','nicometa|🪁|Cometa|🪁 ☁️ ☀️|sube|','nidulces|🍭|Lluvia de dulces|🍭 🍬 🍫|cae|','nipayaso|🤡|Payasito|🎈 🎪 🤡|estalla|','nicohete|🚀|Al espacio|🚀 ⭐ 🪐|sube|','nidino|🦖|Dinosaurio|🦖 🌋 🌿|estalla|','niheladito|🍦|Heladito|🍦 🍨 🍧|cae|'],
+  e:['🧒|Niño|feliz','🧸|Osito|amor','🍭|Dulce|feliz','🎈|Globo|feliz','🦖|Dino|risa','🚀|Cohete|fuego','🍦|Helado|feliz','🤸|Juego|fiesta']},
+ {id:'maestro',n:'Día del Maestro',i:'📚',pago:'pesos',f:['05-15'],g:['mafelizp|📚|Feliz día, profe|📚 🍎 ⭐|cae|¡Feliz día, profe!','maestrella|⭐|Profe estrella|⭐ 🌟 ✨|cae|','mamanzana|🍎|Manzana para el profe|🍎 🍏 💛|sube|','malapiz|✏️|Gracias por enseñarme|✏️ 📖 💡|sube|Gracias por enseñarme','madiploma|📜|Diploma de honor|📜 🏅 ✨|estalla|','mapizarra|🧑‍🏫|Lección de vida|🧑‍🏫 📚 💡|sube|','mabombillo|💡|Me iluminaste|💡 ✨ 🌟|estalla|','maaplausos|👏|Aplausos al profe|👏 🎉 ⭐|estalla|'],
+  e:['🧑‍🏫|Profe|genial','📚|Libros|ok','🍎|Manzana|amor','✏️|Lápiz|ok','💡|Idea|sorpresa','📝|Tarea|triste','🎓|Birrete|fiesta','⭐|Estrella|genial']},
+ {id:'salud',n:'Médicos y enfermeras',i:'🩺',pago:'pesos',f:['12-03','05-12'],g:['safeliz|🩺|Feliz día, doctor|🩺 💙 ⭐|cae|¡Feliz día!','saheroe|🦸|Héroes de bata blanca|🦸 🩺 💙|estalla|Héroes de bata blanca','sacorazon|❤️‍🩹|Gracias por cuidarnos|❤️‍🩹 💙 ✨|sube|Gracias por cuidarnos','sacafe|☕|Café de turno|☕ 🌙 ⭐|sube|','saenfermera|👩‍⚕️|Feliz día, enfermera|👩‍⚕️ 💐 💙|cae|','salatido|💓|Latido|💓 💓 💓|estalla|','saaplausos|👏|Aplausos|👏 🙌 💙|estalla|','satrofeo|🏆|Vocación|🏆 🩺 ⭐|estalla|'],
+  e:['🩺|Estetoscopio|ok','👩‍⚕️|Doctora|genial','👨‍⚕️|Doctor|genial','💉|Vacuna|sorpresa','💊|Pastilla|ok','❤️‍🩹|Corazón|amor','🏥|Hospital|ok','😷|Tapabocas|triste']},
+ {id:'amistad',n:'Amor y Amistad',i:'💑',pago:'pesos',f:['09-19'],g:['amifeliz|💑|Feliz Amor y Amistad|💕 🤝 ✨|cae|¡Feliz Amor y Amistad!','amisecreto|🎁|Amigo secreto|🎁 ❓ 💕|estalla|¿Adivina quién soy?','amichocolate|🍫|Chocolates|🍫 🍬 💕|cae|','amiosito|🧸|Osito con corazón|🧸 💕 💖|sube|','amiamigos|🤝|Amigos por siempre|🤝 💛 ⭐|estalla|Amigos por siempre','amiglobo|🎈|Globo de corazón|🎈 💖 💕|sube|','amiflores|💐|Detalle|💐 💕 🌸|cae|','amiabrazo|🫂|Abrazo|🫂 💕 💛|sube|'],
+  e:['💑|Pareja|amor','🤝|Amigos|ok','🎁|Regalo|feliz','🍫|Chocolate|amor','🧸|Osito|amor','💕|Corazones|amor','😉|Guiño|guino','🥰|Cariño|amor']},
+ {id:'halloween',n:'Halloween',i:'🎃',pago:'pesos',f:['10-31'],g:['hacalabaza|🎃|Calabaza|🎃 🦇 🍬|sube|¡Dulce o truco!','hafantasma|👻|Fantasmita|👻 👻 💨|sube|¡Buuu!','hamurcielago|🦇|Murciélagos|🦇 🦇 🌙|estalla|','hadulces|🍬|Lluvia de dulces|🍬 🍭 🍫|cae|','habruja|🧙|Brujita|🧙 ✨ 🌙|estalla|','haarana|🕷️|Arañita|🕷️ 🕸️ 🕷️|cae|','haluna|🌕|Luna llena|🌕 🐺 ⭐|sube|','hadisfraz|🦸|Disfraz|🦸 🧛 🧟|estalla|'],
+  e:['🎃|Calabaza|risa','👻|Fantasma|sorpresa','🦇|Murciélago|bravo','🍬|Dulce|feliz','🧙|Bruja|guino','🕷️|Araña|sorpresa','💀|Calavera|risa','🍭|Chupeta|feliz']},
+ {id:'velitas',n:'Día de las Velitas',i:'🕯️',pago:'pesos',f:['12-07'],g:['vevelas|🕯️|Noche de velitas|🕯️ 🕯️ ✨|sube|¡Feliz noche de velitas!','vefarol|🏮|Faroles|🏮 🏮 ✨|sube|','veluz|✨|Que tu luz brille|✨ 🌟 💫|cae|Que tu luz brille','veestrella|⭐|Estrella de diciembre|⭐ 🌟 ✨|cae|','vebunuelo|🍩|Buñuelos|🍩 🍪 ☕|cae|','vefamilia|🏡|Velitas en familia|🏡 🕯️ 💛|sube|','vedeseo|🙏|Un deseo|🙏 🕯️ ✨|sube|','vecielo|🌌|Cielo de luces|🌌 ✨ 💫|cae|'],
+  e:['🕯️|Vela|feliz','🏮|Farol|feliz','✨|Luz|genial','🌟|Estrella|genial','🙏|Deseo|gracias','🍩|Buñuelo|feliz','💛|Corazón|amor','🌌|Noche|sorpresa']},
+ {id:'navidad',n:'Navidad y Año Nuevo',i:'🎄',pago:'pesos',f:['12-24','12-31'],g:['nafeliz|🎄|Feliz Navidad|🎄 🎁 ✨|cae|¡Feliz Navidad!','nanieve|❄️|Nieve|❄️ ❄️ ⛄|cae|','naregalos|🎁|Regalos|🎁 🎀 🎁|cae|','napapa|🎅|Papá Noel|🎅 🦌 🛷|sube|','naestrella|⭐|Estrella de Belén|⭐ ✨ 🌟|cae|','nanatilla|🍮|Natilla y buñuelos|🍮 🍩 ☕|cae|','naano|🎆|Feliz Año Nuevo|🎆 🎇 🥂|estalla|¡Feliz Año Nuevo!','nauvas|🍇|Las 12 uvas|🍇 🍇 🕛|cae|'],
+  e:['🎄|Arbolito|feliz','🎅|Papá Noel|risa','⛄|Muñeco de nieve|feliz','🎁|Regalo|amor','❄️|Copo|feliz','🦌|Reno|guino','🥂|Brindis|ok','🎆|Pólvora|fiesta']},
+ {id:'semanasanta',n:'Semana Santa',i:'✝️',pago:'pesos',f:['pascua-7','pascua'],g:['sscruz|✝️|Bendecida Semana Santa|✝️ 🕊️ ✨|sube|Bendecida Semana Santa','sspalma|🌿|Domingo de Ramos|🌿 🌿 ✨|cae|','sspaloma|🕊️|Paz|🕊️ 🕊️ ✨|sube|La paz sea contigo','ssluz|🌅|Resurrección|🌅 ✨ 🌟|sube|¡Ha resucitado!','sspan|🍞|Pan y vino|🍞 🍷 🙏|sube|','ssoracion|🙏|Oración|🙏 ✨ 🕯️|sube|','sscorazon|❤️|Amor eterno|❤️ ✝️ ✨|sube|','sslirio|💮|Lirios de Pascua|💮 🌸 ✨|cae|'],
+  e:['✝️|Cruz|gracias','🕊️|Paloma|feliz','🙏|Oración|gracias','🌿|Ramos|ok','🌅|Amanecer|genial','🕯️|Vela|feliz','📖|Biblia|ok','❤️|Amor|amor']},
+ {id:'grados',n:'Grados',i:'🎓',pago:'pesos',f:['06-15','12-01'],g:['grbirrete|🎓|Al aire los birretes|🎓 🎓 🎉|sube|¡Felicitaciones, graduado!','grdiploma|📜|Diploma|📜 🏅 ✨|estalla|','grprofe|🧑‍🏫|Felicitaciones, profe|🧑‍🏫 🎓 ⭐|estalla|¡Felicitaciones, profe!','grfuturo|🚀|Al futuro|🚀 ⭐ 🌟|sube|El futuro es tuyo','grmedalla|🏅|Medalla de honor|🏅 🥇 ✨|estalla|','grbrindis|🥂|Brindis de grado|🥂 🍾 🎉|estalla|','grlibros|📚|Lo lograste|📚 🎓 💛|sube|','grfamilia|👨‍👩‍👧|Orgullo de la familia|👨‍👩‍👧 💛 🎓|sube|El orgullo de la familia'],
+  e:['🎓|Graduado|fiesta','📜|Diploma|genial','🏅|Medalla|genial','🥳|Fiesta|fiesta','📚|Libros|ok','🚀|Futuro|fuego','👏|Aplausos|fiesta','💯|Cien|genial']},
+ {id:'patrias',n:'Fiestas patrias',i:'🇨🇴',pago:'pesos',f:['07-20','08-07'],g:['pabandera|🇨🇴|Viva Colombia|🇨🇴 💛 💙 ❤️|cae|¡Viva Colombia!','pacondor|🦅|Cóndor de los Andes|🦅 🏔️ ☁️|sube|','pacafe|☕|Café de Colombia|☕ 🌱 💛|sube|','paorquidea|🌸|Orquídea|🌸 🌺 ✨|cae|','papolvora|🎆|Fiesta nacional|🎆 🇨🇴 🎇|estalla|','pasombrero|👒|Sombrero vueltiao|👒 🎶 ✨|sube|','pamontana|🏔️|Mi tierra|🏔️ 🌄 💚|sube|','paorgullo|💛|Orgullo colombiano|💛 💙 ❤️|estalla|Orgullo colombiano'],
+  e:['🇨🇴|Colombia|amor','☕|Café|ok','🦅|Cóndor|genial','🌸|Orquídea|feliz','👒|Sombrero|fiesta','💛|Amarillo|amor','💙|Azul|amor','❤️|Rojo|amor']},
+ {id:'carnaval',n:'Carnaval',i:'🎭',pago:'pesos',f:['pascua-50'],g:['camascara|🎭|¡Que viva el Carnaval!|🎭 🎉 🎊|cae|¡Que viva el Carnaval!','cacumbia|💃|A bailar cumbia|💃 🕺 🎶|sube|¡A bailar!','camaicena|🤍|Maicena|🤍 ☁️ ✨|cae|','catambor|🥁|Tambores|🥁 🎶 🔥|estalla|','caflores|🌺|Batalla de flores|🌺 🌸 🌼|cae|','caserpentina|🎊|Serpentinas|🎊 🎉 🌈|cae|','cacongo|🐂|Danza del congo|🐂 🎭 ✨|estalla|','cagozar|😄|Quien lo vive es quien lo goza|😄 🎉 💃|estalla|Quien lo vive es quien lo goza'],
+  e:['🎭|Máscara|fiesta','💃|Bailarina|fiesta','🕺|Bailarín|fiesta','🥁|Tambor|fuego','🎊|Serpentina|feliz','🌺|Flor|feliz','🤍|Maicena|risa','🎶|Música|feliz']},
+ {id:'mar',n:'Fiestas del Mar',i:'🏖️',pago:'pesos',f:['07-25'],g:['maola|🌊|Ola del Caribe|🌊 🌊 💙|sube|','maplaya|🏖️|Día de playa|🏖️ ☀️ 🐚|cae|','mapez|🐟|Peces de colores|🐟 🐠 🐡|sube|','maconcha|🐚|Caracolas|🐚 🦀 ⭐|cae|','mabarco|⛵|Regata|⛵ 🌊 ☀️|sube|','masol|🌅|Atardecer en la bahía|🌅 🌊 ✨|sube|El mejor atardecer','mareina|👑|Reina del Mar|👑 🌊 💎|cae|','mapescado|🐟|Pescado frito con patacón|🐟 🍋 🥥|sube|'],
+  e:['🌊|Ola|feliz','🏖️|Playa|feliz','⛵|Velero|ok','🐠|Pez|risa','🦀|Cangrejo|bravo','🥥|Coco|feliz','🌅|Atardecer|amor','🐚|Caracola|feliz']},
+ {id:'fe',n:'Fe y bendiciones',i:'🙏',pago:'pesos',g:['febendiga|🙏|Dios te bendiga|🙏 ✨ 🕊️|sube|Dios te bendiga','fepaloma|🕊️|Paz|🕊️ 🕊️ ✨|sube|','feluz|🌟|Luz divina|🌟 ✨ 💫|cae|','feoracion|📖|Orando por ti|📖 🙏 💛|sube|Estoy orando por ti','fecruz|✝️|Fe|✝️ ✨ 💛|sube|','feangel|😇|Ángel de la guarda|😇 🪽 ✨|cae|','fegracias|🙌|Gloria a Dios|🙌 ✨ 🎶|estalla|¡Gloria a Dios!','fearcoiris|🌈|Promesa|🌈 ☁️ ✨|cae|'],
+  e:['🙏|Orando|gracias','😇|Angelito|feliz','🕊️|Paloma|feliz','✝️|Cruz|gracias','📖|Biblia|ok','🙌|Alabanza|fiesta','🌟|Luz|genial','❤️|Amor|amor']},
+ {id:'costeno',n:'Costeño Caribe',i:'🌴',pago:'pesos',g:['coaja|😎|¡Ajá, mi llave!|😎 🌴 ☀️|estalla|¡Ajá, mi llave!','cocalor|🥵|Qué calor|🥵 ☀️ 🔥|cae|¡Qué calor tan bárbaro!','copalmera|🌴|Palmeras|🌴 🥥 ☀️|sube|','cocumbia|🪗|Vallenato|🪗 🎶 💛|sube|','cohamaca|🛌|Hamaca y brisa|💤 🌴 🍃|sube|','cobollo|🌽|Bollo y queso|🌽 🧀 ☕|cae|','comar|🌊|Pa’ la playa|🌊 🏖️ ☀️|sube|','cocerveza|🍺|Una fría|🍺 🧊 ☀️|estalla|'],
+  e:['😎|Bacano|genial','🥵|Calor|bravo','🌴|Palmera|feliz','🪗|Acordeón|fiesta','🥥|Coco|feliz','🍺|Fría|ok','☀️|Sol|feliz','🤣|Mamadera de gallo|risa']},
+ {id:'futbol',n:'Fútbol y celebración',i:'⚽',pago:'pesos',g:['fugol|⚽|¡Gooool!|⚽ 🥅 🎉|estalla|¡Gooool!','fuola|🙌|La ola|🙌 🙌 🙌|sube|','futrofeo|🏆|Campeones|🏆 ⭐ 🎊|estalla|¡Campeones!','fucamiseta|👕|Ponte la camiseta|👕 💛 💙|cae|','fupito|📣|Barra brava sana|📣 🥁 🎶|estalla|','futarjeta|🟨|Tarjeta amarilla|🟨 🟨 😅|cae|','fupenal|🥅|Penalti|🥅 ⚽ 🧤|estalla|','fubalon|⚽|Lluvia de balones|⚽ ⚽ ⚽|cae|'],
+  e:['⚽|Balón|feliz','🥅|Arco|ok','🏆|Copa|genial','🟨|Amarilla|sorpresa','🟥|Roja|bravo','🧤|Arquero|ok','📣|Barra|fiesta','🙌|Gol|fiesta']},
+ {id:'mascotas',n:'Mascotas',i:'🐶',pago:'pesos',g:['maperro|🐶|Perrito feliz|🐶 🦴 💛|sube|','magato|🐱|Gatito|🐱 🐾 💤|sube|','mahuellas|🐾|Huellitas|🐾 🐾 🐾|cae|','mahueso|🦴|Un huesito|🦴 🐕 ✨|estalla|','mapajaro|🐦|Pajarito|🐦 🎶 🌿|sube|','mapez2|🐠|Pecesito|🐠 🫧 🫧|sube|','maconejo|🐰|Conejito|🐰 🥕 💕|sube|','malamer|😛|Lametazo|😛 💦 🐶|estalla|'],
+  e:['🐶|Perro|feliz','🐱|Gato|guino','🐾|Huella|feliz','🐰|Conejo|amor','🐦|Pajarito|feliz','🐢|Tortuga|ok','🐹|Hámster|risa','🦜|Loro|risa']},
+ {id:'humor',n:'Humor paisa y costeño',i:'😂',pago:'pesos',g:['huparce|😎|¡Qué más, parce!|😎 👋 ✨|estalla|¡Qué más, parce!','hupues|🤠|¡Pues claro, hombre!|🤠 🌄 ☕|sube|','hucarcajada|🤣|Carcajada|🤣 😂 😆|estalla|','huchisme|👀|Chismecito|👀 ☕ 🤫|sube|Cuéntame el chisme','hunolorepita|🙊|No lo repito|🙊 🤐 😅|estalla|','huguayabo|🥴|Guayabo|🥴 💤 💦|cae|','hutroll|😜|Mamando gallo|😜 🐓 😂|estalla|','hucafe|☕|Tintico|☕ 😌 ✨|sube|'],
+  e:['😂|Risa|risa','🤣|Carcajada|risa','😜|Mamando gallo|guino','👀|Chisme|sorpresa','🤭|Ji ji|risa','🙊|Mudo|risa','🥴|Guayabo|triste','🐓|Gallo|risa']},
+ {id:'bodas',n:'Bodas y aniversarios',i:'💍',pago:'pesos',g:['bocasados|💍|Felicidades, esposos|💍 💐 ✨|cae|¡Felicidades a los esposos!','bopastel|🎂|Pastel de bodas|🎂 💒 💕|sube|','bopalomas|🕊️|Palomas blancas|🕊️ 🕊️ 💕|sube|','boanillos|💞|Unidos|💞 💍 ✨|estalla|','boarroz|🍚|Lluvia de arroz|⚪ ⚪ 💕|cae|','bobrindis|🥂|Brindis por los novios|🥂 🍾 💕|estalla|','boaniversario|💖|Feliz aniversario|💖 🌹 ✨|cae|¡Feliz aniversario!','bobaile|💃|Primer baile|💃 🕺 🎶|sube|'],
+  e:['💍|Anillo|amor','💒|Iglesia|feliz','👰|Novia|amor','🤵|Novio|genial','🥂|Brindis|ok','💞|Unidos|amor','🕊️|Paloma|feliz','💐|Ramo|amor']}
+];
+// ---- Catálogo armado: guiños y emoticones de paquetes ----
+const PAQ_G={},PAQ_E={};
+PAQ.forEach(p=>{p.gs=p.g.map(s=>{const [id,ic,n,pz,modo,fr]=s.split('|');const g=[id,ic,n,0,pz.split(' ').filter(Boolean),modo||'sube',fr||'',p.id];PAQ_G[id]=g;return g});
+ p.es=p.e.map((s,j)=>{const [ic,n,an]=s.split('|');const e=[p.id+'_e'+j,ic,n,an,p.id];PAQ_E[e[0]]=e;return e})});
+function paqDe(id){return PAQ.find(p=>p.id===id)}
+function misPaqs(u){u=u||yo();if(!u)return [];const t=new Set([...(u.paqs||[]),...(u.paqC||[])]);if(u.tipo==='super'||u.u==='ricardolondono')PAQ.forEach(p=>t.add(p.id));return [...t]}
+function tienePaq(id,u){return misPaqs(u).includes(id)}
+// ---- Fechas especiales: la tienda destaca el paquete 21 días antes ----
+function pascua(y){const a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),h=(19*a+b-d-g+15)%30,i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+22*l)/451),mes=Math.floor((h+l-7*m+114)/31),dia=(h+l-7*m+114)%31+1;return new Date(y,mes-1,dia)}
+function paqFechas(p,y){return (p.f||[]).map(s=>{if(/^pascua/.test(s)){const d=pascua(y);d.setDate(d.getDate()+(+s.slice(6)||0));return d}const [m,d]=s.split('-').map(Number);return new Date(y,m-1,d)})}
+function paqPronto(p){const hoy=new Date();hoy.setHours(0,0,0,0);for(const y of [hoy.getFullYear(),hoy.getFullYear()+1])for(const d of paqFechas(p,y)){const dias=Math.round((d-hoy)/864e5);if(dias>=-1&&dias<=21)return dias}return null}
+const paqPrecio=p=>p.pago==='coins'?num(PAQ_COINS)+' SkyCoins':pesos(PAQ_PESOS);
 
 migrar25();migrar27();migrar28();migrar29();migrar32();if(PROD)prodIniciar();
 render();
